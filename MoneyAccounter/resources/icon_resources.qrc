@@ -1,0 +1,43 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../images/icons/1.png</file>
+        <file>../images/icons/2.png</file>
+        <file>../images/icons/3.png</file>
+        <file>../images/icons/4.png</file>
+        <file>../images/icons/5.png</file>
+        <file>../images/icons/6.png</file>
+        <file>../images/icons/7.png</file>
+        <file>../images/icons/8.png</file>
+        <file>../images/icons/9.png</file>
+        <file>../images/icons/10.png</file>
+        <file>../images/icons/11.png</file>
+        <file>../images/icons/12.png</file>
+        <file>../images/icons/13.png</file>
+        <file>../images/icons/14.png</file>
+        <file>../images/icons/15.png</file>
+        <file>../images/icons/16.png</file>
+        <file>../images/icons/17.png</file>
+        <file>../images/icons/18.png</file>
+        <file>../images/icons/19.png</file>
+        <file>../images/icons/20.png</file>
+        <file>../images/icons/21.png</file>
+        <file>../images/icons/22.png</file>
+        <file>../images/icons/23.png</file>
+        <file>../images/icons/24.png</file>
+        <file>../images/icons/25.png</file>
+        <file>../images/icons/26.png</file>
+        <file>../images/icons/27.png</file>
+        <file>../images/icons/28.png</file>
+        <file>../images/icons/29.png</file>
+        <file>../images/icons/30.png</file>
+        <file>../images/icons/31.png</file>
+        <file>../images/icons/32.png</file>
+        <file>../images/icons/33.png</file>
+        <file>../images/icons/34.png</file>
+        <file>../images/icons/35.png</file>
+        <file>../images/icons/36.png</file>
+        <file>../images/icons/37.png</file>
+        <file>../images/icons/38.png</file>
+        <file>../images/icons/39.png</file>
+    </qresource>
+</RCC>

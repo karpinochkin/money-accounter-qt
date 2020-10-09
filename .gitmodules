@@ -1,0 +1,3 @@
+[submodule "MoneyAccounter/src/vendor/decimal"]
+	path = MoneyAccounter/src/vendor/decimal
+	url = https://github.com/vpiotr/decimal_for_cpp.git
