@@ -14,6 +14,7 @@ auto currency = CreateScope<DB::Tables::QCurrency>(db);
 auto symbols = CreateScope<DB::Tables::QCurrencySymbol>(db);
 auto icon = CreateScope<DB::Tables::QIcon>(db);
 auto cashAccsCateg = CreateScope<DB::Tables::CashAccoutCategory>(db);
+auto cashAcc = CreateScope<DB::Tables::CashAccount>(db);
 
 /// *** open db *** ///
 TEST(tables_start_test, open_db) {
@@ -306,6 +307,126 @@ TEST(cash_accs_categ_table_test, GetAll) {
     ASSERT_EQ(list[1].settings.isIncludeDebt, false);
     ASSERT_EQ(list[1].settings.isIncludeRefund, false);
     ASSERT_EQ(list[1].settings.isIncludePurpose, false);
+}
+
+TEST(cash_acc_table_test, CreateTable) {
+    cashAcc->CreateTable();
+
+    QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::CashAccount::tableDB() + "';";
+
+    auto [query, result] = cashAcc->MakeQuery(text);
+            ASSERT_TRUE(result);
+
+            QString answer = "";
+            if (query->next()) {
+        answer = query->value(0).toString();
+    }
+
+    ASSERT_EQ(answer, DB::Tables::Data::CashAccount::tableDB());
+}
+
+TEST(cash_acc_table_test, Add) {
+    Models::CashAccount model;
+    model.id = 1;
+    model.name = "name1";
+    model.icon.id = 1;
+    model.currency.id = 1;
+    model.category.id = 1;
+    cashAcc->Add(model);
+
+    model.id = 2;
+    model.name = "name2";
+    model.icon.id = 1;
+    model.currency.id = 2;
+    model.category.id = 2;
+    cashAcc->Add(model);
+}
+
+TEST(cash_acc_table_test, Edit) {
+    Models::CashAccount model;
+    model.id = 1;
+    model.name = "test111";
+    model.description = "desc";
+    model.debt = 12;
+    model.color.set(QString("#000012"));
+    model.refund = 1232.1;
+    model.balance = 1323.23;
+    model.purpose = 123;
+    model.settings.displayInExpenses = true;
+    model.settings.displayInOverallBalance = false;
+    model.icon.id = 2;
+    model.currency.id = 2;
+    model.category.id = 2;
+    cashAcc->Edit(model);
+
+    Models::CashAccount model2;
+    model2.id = 2;
+    model2.name = "test222";
+    model2.icon.id = 1;
+    model2.currency.id = 1;
+    model2.category.id = 1;
+    cashAcc->Edit(model2);
+}
+
+TEST(cash_acc_table_test, Get) {
+    auto m = cashAcc->Get(1);
+    ASSERT_EQ(m.id, 1);
+    ASSERT_EQ(m.name, "test111");
+    ASSERT_EQ(m.description, "desc");
+    ASSERT_EQ(m.color.hex(), "#000012");
+    ASSERT_EQ(m.refund.getAsDouble(), 1232.1);
+    ASSERT_EQ(m.balance.getAsDouble(), 1323.23);
+    ASSERT_EQ(m.purpose.getAsDouble(), 123);
+    ASSERT_EQ(m.settings.displayInExpenses, true);
+    ASSERT_EQ(m.settings.displayInOverallBalance, false);
+    ASSERT_EQ(m.icon.id, 2);
+    ASSERT_EQ(m.currency.id, 2);
+    ASSERT_EQ(m.category.id, 2);
+
+    auto m2 = cashAcc->Get(2);
+    qDebug() << m2.name;
+    ASSERT_EQ(m2.id, 2);
+    ASSERT_EQ(m2.name, "test222");
+    ASSERT_EQ(m2.description, "");
+    ASSERT_EQ(m2.color.hex(), "#000000");
+    ASSERT_EQ(m2.refund.getAsDouble(), 0);
+    ASSERT_EQ(m2.balance.getAsDouble(), 0);
+    ASSERT_EQ(m2.purpose.getAsDouble(), 0);
+    ASSERT_EQ(m2.settings.displayInExpenses, false);
+    ASSERT_EQ(m2.settings.displayInOverallBalance, false);
+    ASSERT_EQ(m2.icon.id, 1);
+    ASSERT_EQ(m2.currency.id, 1);
+    ASSERT_EQ(m2.category.id, 1);
+}
+
+TEST(cash_acc_table_test, GetAll) {
+    auto mdls = cashAcc->GetAll();
+    ASSERT_EQ(mdls.at(0).id, 1);
+    ASSERT_EQ(mdls.at(0).name, "test111");
+    ASSERT_EQ(mdls.at(0).description, "desc");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000012");
+    ASSERT_EQ(mdls.at(0).refund.getAsDouble(), 1232.1);
+    ASSERT_EQ(mdls.at(0).balance.getAsDouble(), 1323.23);
+    ASSERT_EQ(mdls.at(0).purpose.getAsDouble(), 123);
+    ASSERT_EQ(mdls.at(0).settings.displayInExpenses, true);
+    ASSERT_EQ(mdls.at(0).settings.displayInOverallBalance, false);
+    ASSERT_EQ(mdls.at(0).icon.id, 2);
+    ASSERT_EQ(mdls.at(0).currency.id, 2);
+    ASSERT_EQ(mdls.at(0).category.id, 2);
+
+    ASSERT_EQ(mdls.at(1).id, 2);
+    ASSERT_EQ(mdls.at(1).name, "test222");
+    ASSERT_EQ(mdls.at(1).description, "");
+    ASSERT_EQ(mdls.at(1).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(1).refund.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(1).balance.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(1).purpose.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(1).settings.displayInExpenses, false);
+    ASSERT_EQ(mdls.at(1).settings.displayInOverallBalance, false);
+    ASSERT_EQ(mdls.at(1).icon.id, 1);
+    ASSERT_EQ(mdls.at(1).currency.id, 1);
+    ASSERT_EQ(mdls.at(1).category.id, 1);
+
 }
 
 /// *** close db *** ///

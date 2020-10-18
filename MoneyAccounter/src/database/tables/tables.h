@@ -135,8 +135,8 @@ struct CashAccount {
         return "purpose";
     }
 
-    static inline QString typeColumnDB() {
-        return "type";
+    static inline QString idCashAccountCategoryColumnDB() {
+        return "id_cash_acc_category";
     }
 };
 

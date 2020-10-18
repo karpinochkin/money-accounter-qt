@@ -6,6 +6,11 @@
 #include "../tables/icontable.h"
 #include "../tables/cashaccouttable.h"
 
+namespace DB {
+
+class QDispatcher;
+}
+
 namespace DB::Controllers {
 
 ///
@@ -65,6 +70,31 @@ private:
     Scope<Tables::CashAccoutCategory> cashAccCategory;
 
     void isCategoryCorrect(const Category &model) const;
+};
+
+class QCashAccount : public QObject
+{
+public:
+    friend class DB::QDispatcher;
+
+    explicit QCashAccount(QSqlDatabase &database, QObject *parent = nullptr);
+    ~QCashAccount() = default;
+
+    bool CreateTables();
+    bool Add(const CashAcc &model);
+    bool Edit(const CashAcc &model);
+    CashAcc Get(uint id);
+    CashAccs GetAll();
+
+private:
+    Ref<QCurrency> currencyCntrl;
+    Ref<QIcon> iconCntrl;
+    Ref<QCashAccountCategory> cashAccCategoryCntrl;
+
+    Scope<Tables::CashAccount> cashAccTable;
+
+    void isCashAccountCorrect(const CashAcc &model) const;
+    void isCashAccountCorrectForDB(const CashAcc &model) const;
 };
 
 }

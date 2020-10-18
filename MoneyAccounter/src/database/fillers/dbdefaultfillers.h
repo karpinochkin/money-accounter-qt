@@ -59,6 +59,17 @@ private:
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };
+
+class QCashAccountFiller : public QFillerBase {
+public:
+    QCashAccountFiller(Ref<Controllers::QCashAccount> &cashAcc);
+    ~QCashAccountFiller() = default;
+
+private:
+    Ref<Controllers::QCashAccount> &m_cashAcc;
+    void setDefaultValuesIntoTables() override;
+    void addIntoDB(const QList<KIDRow> &kid);
+};
 }
 
 #endif // DBDEFAULTFILLERS_H

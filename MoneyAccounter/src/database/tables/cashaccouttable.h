@@ -8,6 +8,7 @@
 namespace DB::Tables {
 
 using CategData = Data::CashAccountCategory;
+using CashAccData = Data::CashAccount;
 
 class CashAccoutCategory : public QBase
 {
@@ -22,6 +23,22 @@ public:
 
 private:
     inline Category getModelFromQuery(QSqlQuery *query);
+};
+
+class CashAccount : public QBase
+{
+public:
+    explicit CashAccount(QSqlDatabase &database, QObject *parent = nullptr);
+    ~CashAccount() = default;
+
+    void CreateTable() override;
+    void Add(const CashAcc& model);
+    void Edit(const CashAcc& model);
+    CashAcc Get(uint id);
+    CashAccs GetAll();
+
+private:
+    inline CashAcc getModelFromQuery(QSqlQuery *query);
 };
 
 }

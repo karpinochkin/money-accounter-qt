@@ -18,38 +18,27 @@ DB::QDispatcher::~QDispatcher()
     closeDB();
 }
 
-Ref<DB::Controllers::QCurrency> &DB::QDispatcher::Currency()
+Ref<DB::Controllers::QCashAccount> &DB::QDispatcher::CashAccount()
 {
-    return currency;
-}
-
-Ref<DB::Controllers::QIcon> &DB::QDispatcher::Icon()
-{
-    return icon;
-}
-
-Ref<DB::Controllers::QCashAccountCategory> &DB::QDispatcher::CashAccountCategory()
-{
-    return cashAccountCategory;
+    return cashAccount;
 }
 
 void DB::QDispatcher::createControllers()
 {
-    currency = CreateRef<Controllers::QCurrency>(db, this);
-    icon = CreateRef<Controllers::QIcon>(db, this);
-    cashAccountCategory = CreateRef<Controllers::QCashAccountCategory>(db, this);
+    cashAccount = CreateRef<Controllers::QCashAccount>(db, this);
 }
 
 void DB::QDispatcher::fillDB()
 {
-    Scope<DefaultFillers::QFillerBase> filler = CreateScope<DefaultFillers::QCurrencyFiller>(currency);
-    filler->FillByDefault();
+    QVector<Ref<DefaultFillers::QFillerBase>> fillers;
+    fillers.push_back(CreateRef<DefaultFillers::QCurrencyFiller>(cashAccount->currencyCntrl));
+    fillers.push_back(CreateRef<DefaultFillers::QIconFiller>(cashAccount->iconCntrl));
+    fillers.push_back(CreateRef<DefaultFillers::QCashAccountCategoryFiller>(cashAccount->cashAccCategoryCntrl));
+    fillers.push_back(CreateRef<DefaultFillers::QCashAccountFiller>(cashAccount));
 
-    filler = CreateScope<DefaultFillers::QIconFiller>(icon);
-    filler->FillByDefault();
-
-    filler = CreateScope<DefaultFillers::QCashAccountCategoryFiller>(cashAccountCategory);
-    filler->FillByDefault();
+    for (auto i : fillers) {
+        i->FillByDefault();
+    }
 }
 
 void DB::QDispatcher::closeDB()

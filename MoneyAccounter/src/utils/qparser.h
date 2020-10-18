@@ -14,6 +14,9 @@ class QQRCParser;
 
 struct KIDObject {
     QString info;
+    QString operator()() const {
+        return info;
+    }
 };
 
 struct KIDRow {

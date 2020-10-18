@@ -205,3 +205,109 @@ void DB::Controllers::QCashAccountCategory::isCategoryCorrect(const Category &mo
         throw ExceptionDB("QCashAccountCategory::isCategoryCorrect : model is not correct");
     }
 }
+
+DB::Controllers::QCashAccount::QCashAccount(QSqlDatabase &database, QObject *parent)
+    : QObject(parent)
+{
+    currencyCntrl = CreateRef<QCurrency>(database, this);
+    iconCntrl = CreateRef<QIcon>(database, this);
+    cashAccCategoryCntrl = CreateRef<QCashAccountCategory>(database, this);
+
+    cashAccTable = CreateScope<Tables::CashAccount>(database, this);
+
+    if (!CreateTables()) {
+        throw ExceptionDB("cash account tables is not created");
+    }
+}
+
+bool DB::Controllers::QCashAccount::CreateTables()
+{
+    try {
+        cashAccTable->CreateTable();
+        return true;
+    } catch (const  ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+bool DB::Controllers::QCashAccount::Add(const CashAcc &model)
+{
+    try {
+        isCashAccountCorrectForDB(model);
+        cashAccTable->Add(model);
+
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+bool DB::Controllers::QCashAccount::Edit(const CashAcc &model)
+{
+    try {
+//        isCashAccountCorrect(model);
+        isCashAccountCorrectForDB(model);
+        cashAccTable->Edit(model);
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+CashAcc DB::Controllers::QCashAccount::Get(uint id)
+{
+    try {
+        auto model = cashAccTable->Get(id);
+        qDebug() << model.icon.id << model.currency.id << model.category.id;
+        model.icon = iconCntrl->Get(model.icon.id);
+        model.currency = currencyCntrl->Get(model.currency.id);
+        model.category = cashAccCategoryCntrl->Get(model.category.id);
+        isCashAccountCorrect(model);
+
+        return model;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return CashAcc {};
+    }
+}
+
+CashAccs DB::Controllers::QCashAccount::GetAll()
+{
+    try {
+        CashAccs output;
+
+        auto models = cashAccTable->GetAll();
+        for (auto model : models) {
+            try {
+                model.icon = iconCntrl->Get(model.icon.id);
+                model.currency = currencyCntrl->Get(model.currency.id);
+                model.category = cashAccCategoryCntrl->Get(model.category.id);
+                isCashAccountCorrect(model);
+                output.push_back(model);
+            } catch (const ExceptionDB &err) {
+                qDebug() << err.what();
+            }
+        }
+        return output;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return CashAccs {};
+    }
+}
+
+void DB::Controllers::QCashAccount::isCashAccountCorrect(const CashAcc &model) const
+{
+    if (!model.isCorrect()) {
+        throw ExceptionDB("QCashAccount::isCashAccountCorrect : model is not correct");
+    }
+}
+
+void DB::Controllers::QCashAccount::isCashAccountCorrectForDB(const CashAcc &model) const
+{
+    if (!model.isCorrectTable()) {
+        throw ExceptionDB("QCashAccount::isCashAccountCorrectForDB : model is not correct");
+    }
+}

@@ -8,19 +8,22 @@ namespace DB {
 
 class QDispatcher : public QObject
 {
+
 public:
     QDispatcher(const QString &dbName, QObject *parent = nullptr);
     ~QDispatcher();
 
-    Ref<Controllers::QCurrency>& Currency();
-    Ref<Controllers::QIcon>& Icon();
-    Ref<Controllers::QCashAccountCategory>& CashAccountCategory();
+//    Ref<Controllers::QCurrency>& Currency();
+//    Ref<Controllers::QIcon>& Icon();
+//    Ref<Controllers::QCashAccountCategory>& CashAccountCategory();
+    Ref<Controllers::QCashAccount>& CashAccount();
 
 private:
     QSqlDatabase db;
-    Ref<Controllers::QCurrency> currency;
-    Ref<Controllers::QIcon> icon;
-    Ref<Controllers::QCashAccountCategory> cashAccountCategory;
+    Ref<Controllers::QCashAccount> cashAccount;
+//    Ref<Controllers::QCurrency> currency;
+//    Ref<Controllers::QIcon> icon;
+//    Ref<Controllers::QCashAccountCategory> cashAccountCategory;
 
     void createControllers();
     void fillDB();
