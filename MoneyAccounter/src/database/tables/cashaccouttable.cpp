@@ -246,52 +246,6 @@ void CashAccount::Edit(const CashAcc &model)
 
 CashAcc CashAccount::Get(uint id)
 {
-//    QString text = "SELECT "
-//            + CashAccData::idColumnDB() + ","
-//            + CashAccData::nameColumnDB() + ","
-//            + CashAccData::descriptionColumnDB() + ","
-//            + Data::Icon::tableDB() + "." + Data::Icon::idColumnDB() + ", "
-//            + Data::Icon::tableDB() + "." + Data::Icon::pathColumnDB() + ", "
-//            + CashAccData::colorColumnDB() + ", "
-//            + Data::Currency::tableDB() + "." + Data::Currency::idColumnDB() + ", "
-//            + Data::Currency::tableDB() + "." + Data::Currency::nameColumnDB() + ", "
-//            + Data::CurrencySymbol::tableDB() + "." + Data::CurrencySymbol::idColumnDB() + ", "
-//            + Data::CurrencySymbol::tableDB() + "." + Data::CurrencySymbol::symbolColumnDB() + ", "
-//            + CashAccData::balanceColumnDB() + ", "
-//            + CashAccData::refundColumnDB() + ", "
-//            + CashAccData::debtColumnDB() + ", "
-//            + CashAccData::purposeColumnDB() + ", "
-//            + CashAccData::displayInExpensesColumnDB() + ", "
-//            + CashAccData::displayInOverallBalanceColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::idColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::nameColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::descriptionColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::isIncludeDebtColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::isIncludeRefundColumnDB() + ", "
-//            + CategData::tableDB() + "." + CategData::isIncludePurposeColumnDB() + " "
-//            + " FROM "
-//            + CashAccData::tableDB()
-//            + " LEFT OUTER JOIN "
-//            + Data::Icon::tableDB()
-//            + " ON " + Data::Icon::tableDB() + "." + Data::Icon::idColumnDB()
-//            + " = "
-//            + CashAccData::tableDB() + "." + CashAccData::idIconColumnDB()
-//            + " AND "
-//            + Data::Currency::tableDB() + "." + Data::Currency::idColumnDB()
-//            + " = "
-//            + CashAccData::tableDB() + "." + CashAccData::idCurrencyColumnDB()
-//            + " AND "
-//            + Data::CashAccountCategory::tableDB() + "." + Data::CashAccountCategory::idColumnDB()
-//            + " = "
-//            + CashAccData::tableDB() + "." + CashAccData::idCashAccountCategoryColumnDB()
-//            + " AND "
-//            + Data::CurrencySymbol::tableDB() + "." + Data::CurrencySymbol::idColumnDB()
-//            + " = "
-//            + Data::Currency::tableDB() + "." + Data::Currency::idColumnDB()
-//            + " WHERE "
-//            + CashAccData::idColumnDB() + " = '"
-//            + S_NUM(id) + "';";
-
     QString text = "SELECT "
             + CashAccData::idColumnDB() + ","
             + CashAccData::nameColumnDB() + ","
@@ -378,7 +332,5 @@ CashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
 
     return cashAcc;
 }
-
-
 
 }

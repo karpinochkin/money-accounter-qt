@@ -48,11 +48,13 @@ public:
     CashAccountSettings settings {};
     CashAccountCategory category{};
 
+    // checking for model
     bool isCorrect() const {
         return !(id < 1 || name.isEmpty() || !icon.isCorrect()
                  || !currency.isCorrect() || !category.isCorrect());
     }
 
+    // checking model for db table
     bool isCorrectTable() const {
         return !(id < 1 || name.isEmpty() || icon.id < 1
                  || currency.id < 1 || category.id < 1);

@@ -247,7 +247,6 @@ bool DB::Controllers::QCashAccount::Add(const CashAcc &model)
 bool DB::Controllers::QCashAccount::Edit(const CashAcc &model)
 {
     try {
-//        isCashAccountCorrect(model);
         isCashAccountCorrectForDB(model);
         cashAccTable->Edit(model);
         return true;

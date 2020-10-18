@@ -9,12 +9,6 @@ int main(int argc, char *argv[])
         try {
 
             dispatcher = CreateScope<DB::QDispatcher>("db_money_accounter.db", &a);
-//            auto list = dispetcher->Currency()->GetAll();
-
-//            for (auto l : list) {
-//                qDebug() << l.id << l.name;
-//            }
-
 
         } catch (const DB::ExceptionDB& err) {
             qDebug() << "ERR";
