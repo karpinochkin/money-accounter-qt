@@ -269,6 +269,7 @@ TEST(cash_account_controller_test, Get) {
 
 TEST(cash_account_controller_test, GetAll) {
     auto mdls = cashAcc->GetAll();
+    ASSERT_EQ(std::size(mdls), 2);
     ASSERT_EQ(mdls.at(0).id, 1);
     ASSERT_EQ(mdls.at(0).name, "test111");
     ASSERT_EQ(mdls.at(0).description, "desc");
@@ -294,6 +295,25 @@ TEST(cash_account_controller_test, GetAll) {
     ASSERT_EQ(mdls.at(1).icon.id, 88);
     ASSERT_EQ(mdls.at(1).currency.id, 1);
     ASSERT_EQ(mdls.at(1).category.id, 132);
+}
+
+TEST(cash_account_controller_test, Remove) {
+    bool result = cashAcc->Remove(1);
+    ASSERT_TRUE(result);
+    auto mdls = cashAcc->GetAll();
+    ASSERT_EQ(std::size(mdls), 1);
+    ASSERT_EQ(mdls.at(0).id, 2);
+    ASSERT_EQ(mdls.at(0).name, "test222");
+    ASSERT_EQ(mdls.at(0).description, "");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(0).refund.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(0).balance.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(0).purpose.getAsDouble(), 0);
+    ASSERT_EQ(mdls.at(0).settings.displayInExpenses, false);
+    ASSERT_EQ(mdls.at(0).settings.displayInOverallBalance, false);
+    ASSERT_EQ(mdls.at(0).icon.id, 88);
+    ASSERT_EQ(mdls.at(0).currency.id, 1);
+    ASSERT_EQ(mdls.at(0).category.id, 132);
 }
 
 TEST(controller_end_test, drop_db) {

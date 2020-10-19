@@ -36,6 +36,7 @@ public:
     void Edit(const CashAcc& model);
     CashAcc Get(uint id);
     CashAccs GetAll();
+    void Remove(uint id);
 
 private:
     inline CashAcc getModelFromQuery(QSqlQuery *query);

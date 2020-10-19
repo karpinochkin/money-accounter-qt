@@ -85,6 +85,7 @@ public:
     bool Edit(const CashAcc &model);
     CashAcc Get(uint id);
     CashAccs GetAll();
+    bool Remove(uint id);
 
 private:
     Ref<QCurrency> currencyCntrl;

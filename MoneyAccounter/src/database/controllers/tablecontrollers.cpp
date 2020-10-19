@@ -297,6 +297,17 @@ CashAccs DB::Controllers::QCashAccount::GetAll()
     }
 }
 
+bool DB::Controllers::QCashAccount::Remove(uint id)
+{
+    try {
+        cashAccTable->Remove(id);
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
 void DB::Controllers::QCashAccount::isCashAccountCorrect(const CashAcc &model) const
 {
     if (!model.isCorrect()) {

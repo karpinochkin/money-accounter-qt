@@ -312,6 +312,23 @@ CashAccs CashAccount::GetAll()
     return output;
 }
 
+void CashAccount::Remove(uint id)
+{
+    QString text = "DELETE FROM "
+            + CashAccData::tableDB()
+            + " WHERE "
+            + CashAccData::idColumnDB()
+            + " = '"
+            + S_NUM(id)
+            + "';";
+
+    auto [query, result] = MakeQuery(text);
+
+            if (!result) {
+        throw ExceptionDB("CashAccount::Remove: query error");
+    }
+}
+
 CashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
 {
     CashAcc cashAcc;
