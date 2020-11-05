@@ -5,6 +5,7 @@
 #include "../tables/currencytable.h"
 #include "../tables/icontable.h"
 #include "../tables/cashaccouttable.h"
+#include "../tables/categorytable.h"
 
 namespace DB {
 
@@ -55,21 +56,21 @@ private:
 ///
 /// \brief The QCashAccountCategory class - cash acc category facade
 ///
-class QCashAccountCategory : public QObject
+class QCashAccountType : public QObject
 {
 public:
-    explicit QCashAccountCategory(QSqlDatabase &database, QObject *parent = nullptr);
-    ~QCashAccountCategory() = default;
+    explicit QCashAccountType(QSqlDatabase &database, QObject *parent = nullptr);
+    ~QCashAccountType() = default;
 
     bool CreateTables();
-    bool Add(const Category &model);
-    Category Get(uint id);
-    Categories GetAll();
+    bool Add(const Type &model);
+    Type Get(uint id);
+    Types GetAll();
 
 private:
-    Scope<Tables::CashAccoutCategory> cashAccCategory;
+    Scope<Tables::CashAccoutType> cashAccCategory;
 
-    void isCategoryCorrect(const Category &model) const;
+    void isCategoryCorrect(const Type &model) const;
 };
 
 class QCashAccount : public QObject
@@ -90,12 +91,35 @@ public:
 private:
     Ref<QCurrency> currencyCntrl;
     Ref<QIcon> iconCntrl;
-    Ref<QCashAccountCategory> cashAccCategoryCntrl;
+    Ref<QCashAccountType> cashAccCategoryCntrl;
 
     Scope<Tables::CashAccount> cashAccTable;
 
     void isCashAccountCorrect(const CashAcc &model) const;
     void isCashAccountCorrectForDB(const CashAcc &model) const;
+};
+
+class QCategory : public QObject
+{
+public:
+    explicit QCategory(QSqlDatabase &database, QObject *parent = nullptr);
+    ~QCategory() = default;
+
+    bool CreateTables();
+    bool Add(const Models::Category& model);
+    bool Edit(const Models::Category &model);
+    Models::Category Get(uint id);
+    QList<Models::Category> GetAll();
+    bool Remove(uint id);
+
+private:
+    Scope<Tables::Category> category;
+    Ref<QCurrency> currencyCntrl;
+    Ref<QIcon> iconCntrl;
+
+    void isCategoryCorrect(const Models::Category&);
+    void isCategoryCorrectForDB(const Models::Category&);
+
 };
 
 }

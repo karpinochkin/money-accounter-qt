@@ -14,10 +14,12 @@ public:
     ~QDispatcher();
 
     Ref<Controllers::QCashAccount>& CashAccount();
+    Ref<Controllers::QCategory>& Category();
 
 private:
     QSqlDatabase db;
     Ref<Controllers::QCashAccount> cashAccount;
+    Ref<Controllers::QCategory> category;
 
     void createControllers();
     void fillDB();

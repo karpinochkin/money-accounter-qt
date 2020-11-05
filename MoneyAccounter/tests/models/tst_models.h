@@ -76,7 +76,7 @@ TEST(icon_model_test, isCorrect) {
 }
 
 TEST(cash_account_category, isCorrect) {
-    Models::CashAccountCategory category{};
+    Models::CashAccountType category{};
     ASSERT_FALSE(category.isCorrect());
 
     category.id = 3;
@@ -98,5 +98,43 @@ TEST(cash_account_category, isCorrect) {
     category.id = 1;
     ASSERT_TRUE(category.isCorrect());
 }
+
+TEST(category, isCorrect) {
+    Models::Category category;
+    ASSERT_FALSE(category.isCorrect());
+
+    category.id = 3;
+    ASSERT_FALSE(category.isCorrect());
+
+    category.name = "test";
+    ASSERT_FALSE(category.isCorrect());
+
+    category.currency.id = 12;
+    ASSERT_FALSE(category.isCorrect());
+
+    category.currency.name = "hello";
+    ASSERT_FALSE(category.isCorrect());
+
+    category.id = 0;
+    ASSERT_FALSE(category.isCorrect());
+
+    category.description = "test desc";
+    ASSERT_FALSE(category.isCorrect());
+
+    category.id = 1;
+    category.icon.id = 33;
+    category.icon.path = 12;
+    ASSERT_FALSE(category.isCorrect());
+
+    Models::CurrencySymbol sym;
+    sym.id = 12;
+    sym.symbol = "@@";
+    sym.idCurrency = 16;
+    category.currency.symbols.push_back(sym);
+    ASSERT_TRUE(category.isCorrect());
+
+}
+
+
 
 #endif // TST_MODELS_H

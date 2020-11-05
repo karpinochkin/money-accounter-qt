@@ -2,6 +2,7 @@
 #define BASE_H
 
 #include <memory>
+#include <QString>
 
 #define S_NUM(...) QString::number(__VA_ARGS__)
 

@@ -52,7 +52,7 @@ struct Icon {
     }
 };
 
-struct CashAccountCategory {
+struct CashAccountType {
     static inline QString tableDB() {
         return "tbl_cash_acc_categories";
     }
@@ -137,6 +137,40 @@ struct CashAccount {
 
     static inline QString idCashAccountCategoryColumnDB() {
         return "id_cash_acc_category";
+    }
+};
+
+struct Category {
+    static inline QString tableDB() {
+        return "tbl_category";
+    }
+
+    static inline QString idColumnDB() {
+        return "id";
+    }
+
+    static inline QString nameColumnDB() {
+        return "name";
+    }
+
+    static inline QString descriptionColumnDB() {
+        return "description";
+    }
+
+    static inline QString idCurrencyColumnDB() {
+        return "id_currency";
+    }
+
+    static inline QString idIconColumnDB() {
+        return "id_icon";
+    }
+
+    static inline QString colorColumnDB() {
+        return "color";
+    }
+
+    static inline QString isActiveColumnDB() {
+        return "is_active";
     }
 };
 

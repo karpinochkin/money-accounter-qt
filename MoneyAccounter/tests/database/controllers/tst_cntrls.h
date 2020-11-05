@@ -9,8 +9,9 @@
 namespace DB::Controllers {
 auto currency = CreateScope<DB::Controllers::QCurrency>(db);
 auto icon = CreateScope<DB::Controllers::QIcon>(db);
-auto cashAccCateg = CreateScope<DB::Controllers::QCashAccountCategory>(db);
+auto cashAccCateg = CreateScope<DB::Controllers::QCashAccountType>(db);
 auto cashAcc = CreateScope<DB::Controllers::QCashAccount>(db);
+auto category = CreateScope<DB::Controllers::QCategory>(db);
 
 TEST(controller_start_test, open_db) {
     ASSERT_TRUE(openDB());
@@ -106,7 +107,7 @@ TEST(cash_account_category_controller_test, CreateTable) {
 }
 
 TEST(cash_account_category_controller_test, Add) {
-    Category model_1{};
+    Type model_1{};
     ASSERT_FALSE(cashAccCateg->Add(model_1));
     model_1.id = 2;
     ASSERT_FALSE(cashAccCateg->Add(model_1));
@@ -116,7 +117,7 @@ TEST(cash_account_category_controller_test, Add) {
     model_1.settings.isIncludePurpose = 1;
     model_1.description = "test descr";
 
-    Category model_2{};
+    Type model_2{};
     model_2.id = 132;
     model_2.name = "test2";
     ASSERT_TRUE(cashAccCateg->Add(model_1));
@@ -314,6 +315,102 @@ TEST(cash_account_controller_test, Remove) {
     ASSERT_EQ(mdls.at(0).icon.id, 88);
     ASSERT_EQ(mdls.at(0).currency.id, 1);
     ASSERT_EQ(mdls.at(0).category.id, 132);
+}
+
+TEST(category_controller_test, CreateTable) {
+    ASSERT_TRUE(category->CreateTables());
+}
+
+TEST(category_controller_test, Add) {
+    Models::Category model;
+    model.id = 1;
+    ASSERT_FALSE(category->Add(model));
+    model.name = "name1";
+    model.icon.id = 1;
+    model.currency.id = 1;
+    ASSERT_TRUE(category->Add(model));
+
+    model.id = 2;
+    model.name = "name2";
+    model.icon.id = 1;
+    model.currency.id = 2;
+    ASSERT_TRUE(category->Add(model));
+}
+
+TEST(category_controller_test, Edit) {
+    Models::Category model;
+    model.id = 1;
+    ASSERT_FALSE(category->Edit(model));
+    model.name = "test111";
+    ASSERT_FALSE(category->Edit(model));
+    model.description = "desc";
+    ASSERT_FALSE(category->Edit(model));
+    model.color.set(QString("#000012"));
+    ASSERT_FALSE(category->Edit(model));
+    model.icon.id = 2;
+    ASSERT_FALSE(category->Edit(model));
+    model.currency.id = 2;
+    ASSERT_TRUE(category->Edit(model));
+
+    Models::Category model2;
+    ASSERT_FALSE(category->Edit(model2));
+    model2.id = 2;
+    ASSERT_FALSE(category->Edit(model2));
+    model2.name = "test222";
+    ASSERT_FALSE(category->Edit(model2));
+    model2.icon.id = 88;
+    ASSERT_FALSE(category->Edit(model2));
+    model2.currency.id = 1;
+    ASSERT_TRUE(category->Edit(model2));
+}
+
+TEST(category_controller_test, Get) {
+    auto m = category->Get(1);
+    ASSERT_EQ(m.id, 1);
+    ASSERT_EQ(m.name, "test111");
+    ASSERT_EQ(m.description, "desc");
+    ASSERT_EQ(m.color.hex(), "#000012");
+    ASSERT_EQ(m.icon.id, 2);
+    ASSERT_EQ(m.currency.id, 2);
+
+    auto m2 = category->Get(2);
+    ASSERT_EQ(m2.id, 2);
+    ASSERT_EQ(m2.name, "test222");
+    ASSERT_EQ(m2.description, "");
+    ASSERT_EQ(m2.color.hex(), "#000000");
+    ASSERT_EQ(m2.icon.id, 88);
+    ASSERT_EQ(m2.currency.id, 1);
+}
+
+TEST(category_controller_test, GetAll) {
+    auto mdls = category->GetAll();
+    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(mdls.at(0).id, 1);
+    ASSERT_EQ(mdls.at(0).name, "test111");
+    ASSERT_EQ(mdls.at(0).description, "desc");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000012");
+    ASSERT_EQ(mdls.at(0).icon.id, 2);
+    ASSERT_EQ(mdls.at(0).currency.id, 2);
+
+    ASSERT_EQ(mdls.at(1).id, 2);
+    ASSERT_EQ(mdls.at(1).name, "test222");
+    ASSERT_EQ(mdls.at(1).description, "");
+    ASSERT_EQ(mdls.at(1).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(1).icon.id, 88);
+    ASSERT_EQ(mdls.at(1).currency.id, 1);
+}
+
+TEST(category_controller_test, Remove) {
+    bool result = category->Remove(1);
+    ASSERT_TRUE(result);
+    auto mdls = category->GetAll();
+    ASSERT_EQ(std::size(mdls), 1);
+    ASSERT_EQ(mdls.at(0).id, 2);
+    ASSERT_EQ(mdls.at(0).name, "test222");
+    ASSERT_EQ(mdls.at(0).description, "");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(0).icon.id, 88);
+    ASSERT_EQ(mdls.at(0).currency.id, 1);
 }
 
 TEST(controller_end_test, drop_db) {

@@ -7,22 +7,22 @@
 
 namespace DB::Tables {
 
-using CategData = Data::CashAccountCategory;
+using TypeData = Data::CashAccountType;
 using CashAccData = Data::CashAccount;
 
-class CashAccoutCategory : public QBase
+class CashAccoutType : public QBase
 {
 public:
-    explicit CashAccoutCategory(QSqlDatabase &database, QObject *parent = nullptr);
-    ~CashAccoutCategory() = default;
+    explicit CashAccoutType(QSqlDatabase &database, QObject *parent = nullptr);
+    ~CashAccoutType() = default;
 
     void CreateTable() override;
-    void Add(const Category& model);
-    Category Get(uint id);
-    Categories GetAll();
+    void Add(const Type& model);
+    Type Get(uint id);
+    Types GetAll();
 
 private:
-    inline Category getModelFromQuery(QSqlQuery *query);
+    inline Type getModelFromQuery(QSqlQuery *query);
 };
 
 class CashAccount : public QBase

@@ -5,7 +5,7 @@
 
 using CashAcc = Models::CashAccount;
 using CashAccs = QList<Models::CashAccount>;
-using Category = Models::CashAccountCategory;
-using Categories = QList<Models::CashAccountCategory>;
+using Type = Models::CashAccountType;
+using Types = QList<Models::CashAccountType>;
 
 #endif // CASHACCOUNTSNAMES_H

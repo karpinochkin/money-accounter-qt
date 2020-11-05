@@ -49,13 +49,13 @@ private:
     void setDefaultValuesIntoTables() override;
 };
 
-class QCashAccountCategoryFiller : public QFillerBase {
+class QCashAccountTypeFiller : public QFillerBase {
 public:
-    QCashAccountCategoryFiller(Ref<Controllers::QCashAccountCategory> &category);
-    ~QCashAccountCategoryFiller() = default;
+    QCashAccountTypeFiller(Ref<Controllers::QCashAccountType> &category);
+    ~QCashAccountTypeFiller() = default;
 
 private:
-    Ref<Controllers::QCashAccountCategory> m_category;
+    Ref<Controllers::QCashAccountType> m_category;
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };
@@ -67,6 +67,17 @@ public:
 
 private:
     Ref<Controllers::QCashAccount> &m_cashAcc;
+    void setDefaultValuesIntoTables() override;
+    void addIntoDB(const QList<KIDRow> &kid);
+};
+
+class QCategoryFiller : public QFillerBase {
+public:
+    QCategoryFiller(Ref<Controllers::QCategory> &category);
+    ~QCategoryFiller() = default;
+
+private:
+    Ref<Controllers::QCategory> &m_category;
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };

@@ -68,13 +68,13 @@ void QIconFiller::setDefaultValuesIntoTables()
     }
 }
 
-QCashAccountCategoryFiller::QCashAccountCategoryFiller(Ref<Controllers::QCashAccountCategory> &category)
+QCashAccountTypeFiller::QCashAccountTypeFiller(Ref<Controllers::QCashAccountType> &category)
  : m_category(category)
 {
 
 }
 
-void QCashAccountCategoryFiller::setDefaultValuesIntoTables()
+void QCashAccountTypeFiller::setDefaultValuesIntoTables()
 {
     try {
         auto kid = parser->ParseKID("../" + qAppName() + "/data/cash-acc-categ-default.kid");
@@ -84,10 +84,10 @@ void QCashAccountCategoryFiller::setDefaultValuesIntoTables()
     }
 }
 
-void QCashAccountCategoryFiller::addIntoDB(const QList<KIDRow> &kid)
+void QCashAccountTypeFiller::addIntoDB(const QList<KIDRow> &kid)
 {
     for (auto row : kid) {
-        Category category;
+        Type category;
         category.id = row.objects.at(0)().toUInt();
         category.name = row.objects.at(1)();
         category.description = row.objects.at(2)();
@@ -129,6 +129,38 @@ void QCashAccountFiller::addIntoDB(const QList<KIDRow> &kid)
         cashAcc.category.id = row.objects.at(6)().toUInt();
 
         m_cashAcc->Add(cashAcc);
+    }
+}
+
+QCategoryFiller::QCategoryFiller(Ref<Controllers::QCategory> &category)
+ : m_category(category)
+{
+
+}
+
+void QCategoryFiller::setDefaultValuesIntoTables()
+{
+    try {
+        auto kid = parser->ParseKID("../" + qAppName() + "/data/category-default.kid");
+        addIntoDB(kid);
+    } catch (ExceptionParser &err) {
+        qDebug() << err.what();
+    }
+}
+
+void QCategoryFiller::addIntoDB(const QList<KIDRow> &kid)
+{
+    for (auto row : kid) {
+        Models::Category category;
+
+        category.id = row.objects.at(0)().toUInt();
+        category.name = row.objects.at(1)();
+        category.description = row.objects.at(2)();
+        category.currency.id = row.objects.at(3)().toUInt();
+        category.icon.id = row.objects.at(4)().toUInt();
+        category.color.set(row.objects.at(5)());
+
+        m_category->Add(category);
     }
 }
 

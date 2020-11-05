@@ -13,8 +13,9 @@ namespace DB::Tables {
 auto currency = CreateScope<DB::Tables::QCurrency>(db);
 auto symbols = CreateScope<DB::Tables::QCurrencySymbol>(db);
 auto icon = CreateScope<DB::Tables::QIcon>(db);
-auto cashAccsCateg = CreateScope<DB::Tables::CashAccoutCategory>(db);
+auto cashAccsCateg = CreateScope<DB::Tables::CashAccoutType>(db);
 auto cashAcc = CreateScope<DB::Tables::CashAccount>(db);
+auto category = CreateScope<DB::Tables::Category>(db);
 
 /// *** open db *** ///
 TEST(tables_start_test, open_db) {
@@ -234,7 +235,7 @@ TEST(icon_table_test, GetAll) {
 TEST(cash_accs_categ_table_test, CreateTable) {
     cashAccsCateg->CreateTable();
 
-    QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::CashAccountCategory::tableDB() + "';";
+    QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::CashAccountType::tableDB() + "';";
 
     auto [query, result] = cashAccsCateg->MakeQuery(text);
             ASSERT_TRUE(result);
@@ -244,11 +245,11 @@ TEST(cash_accs_categ_table_test, CreateTable) {
         answer = query->value(0).toString();
     }
 
-    ASSERT_EQ(answer, DB::Tables::Data::CashAccountCategory::tableDB());
+    ASSERT_EQ(answer, DB::Tables::Data::CashAccountType::tableDB());
 }
 
 TEST(cash_accs_categ_table_test, Add) {
-    Category model_1;
+    Type model_1;
     model_1.id = 13;
     model_1.name = "test";
     model_1.settings.isIncludeDebt = 0;
@@ -256,7 +257,7 @@ TEST(cash_accs_categ_table_test, Add) {
     model_1.settings.isIncludePurpose = 1;
     model_1.description = "test descr";
 
-    Category model_2;
+    Type model_2;
     model_2.id = 132;
     model_2.name = "test2";
 
@@ -447,6 +448,106 @@ TEST(cash_acc_table_test, Remove) {
     ASSERT_EQ(mdls.at(0).icon.id, 1);
     ASSERT_EQ(mdls.at(0).currency.id, 1);
     ASSERT_EQ(mdls.at(0).category.id, 1);
+}
+
+TEST(category_table_test, CreateTable) {
+    category->CreateTable();
+
+    QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::Category::tableDB() + "';";
+
+    auto [query, result] = category->MakeQuery(text);
+            ASSERT_TRUE(result);
+
+            QString answer = "";
+            if (query->next()) {
+        answer = query->value(0).toString();
+    }
+
+    ASSERT_EQ(answer, DB::Tables::Data::Category::tableDB());
+}
+
+TEST(category_table_test, Add) {
+    Models::Category model;
+    model.id = 1;
+    model.name = "name1";
+    model.icon.id = 1;
+    model.currency.id = 1;
+    model.description = "desc1";
+    category->Add(model);
+
+    model.id = 2;
+    model.name = "name2";
+    model.icon.id = 1;
+    model.currency.id = 2;
+    model.description = "desc2";
+    category->Add(model);
+}
+
+TEST(category_table_test, Edit) {
+    Models::Category model;
+    model.id = 1;
+    model.name = "test111";
+    model.description = "desc";
+    model.color.set(QString("#000012"));
+    model.icon.id = 2;
+    model.currency.id = 2;
+    category->Edit(model);
+
+    Models::Category model2;
+    model2.id = 2;
+    model2.name = "test222";
+    model2.icon.id = 1;
+    model2.currency.id = 1;
+    category->Edit(model2);
+}
+
+TEST(category_table_test, Get) {
+    auto m = category->Get(1);
+    ASSERT_EQ(m.id, 1);
+    ASSERT_EQ(m.name, "test111");
+    ASSERT_EQ(m.description, "desc");
+    ASSERT_EQ(m.color.hex(), "#000012");
+    ASSERT_EQ(m.icon.id, 2);
+    ASSERT_EQ(m.currency.id, 2);
+
+    auto m2 = category->Get(2);
+    ASSERT_EQ(m2.id, 2);
+    ASSERT_EQ(m2.name, "test222");
+    ASSERT_EQ(m2.description, "");
+    ASSERT_EQ(m2.color.hex(), "#000000");
+    ASSERT_EQ(m2.icon.id, 1);
+    ASSERT_EQ(m2.currency.id, 1);
+}
+
+TEST(category_table_test, GetAll) {
+    auto mdls = category->GetAll();
+    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(mdls.at(0).id, 1);
+    ASSERT_EQ(mdls.at(0).name, "test111");
+    ASSERT_EQ(mdls.at(0).description, "desc");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000012");
+    ASSERT_EQ(mdls.at(0).icon.id, 2);
+    ASSERT_EQ(mdls.at(0).currency.id, 2);
+
+    ASSERT_EQ(mdls.at(1).id, 2);
+    ASSERT_EQ(mdls.at(1).name, "test222");
+    ASSERT_EQ(mdls.at(1).description, "");
+    ASSERT_EQ(mdls.at(1).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(1).icon.id, 1);
+    ASSERT_EQ(mdls.at(1).currency.id, 1);
+}
+
+TEST(category_table_test, Remove) {
+    category->Remove(1);
+
+    auto mdls = category->GetAll();
+    ASSERT_EQ(std::size(mdls), 1);
+    ASSERT_EQ(mdls.at(0).id, 2);
+    ASSERT_EQ(mdls.at(0).name, "test222");
+    ASSERT_EQ(mdls.at(0).description, "");
+    ASSERT_EQ(mdls.at(0).color.hex(), "#000000");
+    ASSERT_EQ(mdls.at(0).icon.id, 1);
+    ASSERT_EQ(mdls.at(0).currency.id, 1);
 }
 
 /// *** close db *** ///

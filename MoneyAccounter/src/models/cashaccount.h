@@ -16,7 +16,7 @@ struct CashAccountCategorySettings {
     bool isIncludePurpose;
 };
 
-class CashAccountCategory {
+class CashAccountType {
 public:
     uint id;
     QString name;
@@ -46,7 +46,7 @@ public:
     Decimal debt{};
     Decimal purpose {};
     CashAccountSettings settings {};
-    CashAccountCategory category{};
+    CashAccountType category{};
 
     // checking for model
     bool isCorrect() const {

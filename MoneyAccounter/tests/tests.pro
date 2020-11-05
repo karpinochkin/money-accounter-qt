@@ -12,6 +12,7 @@ HEADERS += \
         ../src/database/controllers/tablecontrollers.h \
         ../src/database/tables/basetable.h \
     ../src/database/tables/cashaccouttable.h \
+    ../src/database/tables/categorytable.h \
         ../src/database/tables/currencytable.h \
     ../src/database/tables/icontable.h \
         ../src/database/tables/tables.h \ \
@@ -30,6 +31,7 @@ SOURCES += \
         ../src/database/controllers/tablecontrollers.cpp \
         ../src/database/tables/basetable.cpp \
         ../src/database/tables/cashaccouttable.cpp \
+        ../src/database/tables/categorytable.cpp \
         ../src/database/tables/currencytable.cpp \
         ../src/database/tables/icontable.cpp \
         ../src/utils/qparser.cpp \

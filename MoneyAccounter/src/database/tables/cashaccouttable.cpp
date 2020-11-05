@@ -2,46 +2,46 @@
 
 namespace DB::Tables {
 
-CashAccoutCategory::CashAccoutCategory(QSqlDatabase &database, QObject *parent)
+CashAccoutType::CashAccoutType(QSqlDatabase &database, QObject *parent)
     : QBase(database, parent)
 {
 
 }
 
-void CashAccoutCategory::CreateTable()
+void CashAccoutType::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB()
+            + TypeData::tableDB() + " ("
+            + TypeData::idColumnDB()
             + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + CategData::nameColumnDB()
+            + TypeData::nameColumnDB()
             + " STRING NOT NULL,"
-            + CategData::descriptionColumnDB()
+            + TypeData::descriptionColumnDB()
             + " STRING,"
-            + CategData::isIncludeDebtColumnDB()
+            + TypeData::isIncludeDebtColumnDB()
             + " BOOLEAN NOT NULL DEFAULT (0),"
-            + CategData::isIncludeRefundColumnDB()
+            + TypeData::isIncludeRefundColumnDB()
             + " BOOLEAN NOT NULL DEFAULT (0),"
-            + CategData::isIncludePurposeColumnDB()
+            + TypeData::isIncludePurposeColumnDB()
             + " BOOLEAN NOT NULL DEFAULT (0));";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
         throw ExceptionDB("CashAccoutCategory::CreateTable() : query error");
     }
-    qDebug() << CategData::tableDB() + " is created";
+    qDebug() << TypeData::tableDB() + " is created";
 }
 
-void CashAccoutCategory::Add(const Category &model)
+void CashAccoutType::Add(const Type &model)
 {
     QString text = "INSERT OR IGNORE INTO "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB() + ", "
-            + CategData::nameColumnDB() + ", "
-            + CategData::descriptionColumnDB() + ", "
-            + CategData::isIncludeDebtColumnDB() + ", "
-            + CategData::isIncludeRefundColumnDB() + ", "
-            + CategData::isIncludePurposeColumnDB()
+            + TypeData::tableDB() + " ("
+            + TypeData::idColumnDB() + ", "
+            + TypeData::nameColumnDB() + ", "
+            + TypeData::descriptionColumnDB() + ", "
+            + TypeData::isIncludeDebtColumnDB() + ", "
+            + TypeData::isIncludeRefundColumnDB() + ", "
+            + TypeData::isIncludePurposeColumnDB()
             + " ) VALUES ('"
             + S_NUM(model.id) + "','"
             + model.name + "','"
@@ -57,19 +57,19 @@ void CashAccoutCategory::Add(const Category &model)
     }
 }
 
-Category CashAccoutCategory::Get(uint id)
+Type CashAccoutType::Get(uint id)
 {
     QString text = "SELECT "
-            + CategData::idColumnDB() + ", "
-            + CategData::nameColumnDB() + ", "
-            + CategData::descriptionColumnDB() + ", "
-            + CategData::isIncludeDebtColumnDB() + ", "
-            + CategData::isIncludeRefundColumnDB() + ", "
-            + CategData::isIncludePurposeColumnDB() + " "
+            + TypeData::idColumnDB() + ", "
+            + TypeData::nameColumnDB() + ", "
+            + TypeData::descriptionColumnDB() + ", "
+            + TypeData::isIncludeDebtColumnDB() + ", "
+            + TypeData::isIncludeRefundColumnDB() + ", "
+            + TypeData::isIncludePurposeColumnDB() + " "
             + " FROM "
-            + CategData::tableDB()
+            + TypeData::tableDB()
             + " WHERE "
-            + CategData::idColumnDB() + " = '"
+            + TypeData::idColumnDB() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
@@ -77,7 +77,7 @@ Category CashAccoutCategory::Get(uint id)
         throw ExceptionDB("CashAccoutCategory::Get : query error");
     }
 
-    Category output;
+    Type output;
     if (query->next()) {
         output = getModelFromQuery(query.get());
     }
@@ -85,24 +85,24 @@ Category CashAccoutCategory::Get(uint id)
     return output;
 }
 
-Categories CashAccoutCategory::GetAll()
+Types CashAccoutType::GetAll()
 {
     QString text = "SELECT "
-            + CategData::idColumnDB() + ", "
-            + CategData::nameColumnDB() + ", "
-            + CategData::descriptionColumnDB() + ", "
-            + CategData::isIncludeDebtColumnDB() + ", "
-            + CategData::isIncludeRefundColumnDB() + ", "
-            + CategData::isIncludePurposeColumnDB() + " "
+            + TypeData::idColumnDB() + ", "
+            + TypeData::nameColumnDB() + ", "
+            + TypeData::descriptionColumnDB() + ", "
+            + TypeData::isIncludeDebtColumnDB() + ", "
+            + TypeData::isIncludeRefundColumnDB() + ", "
+            + TypeData::isIncludePurposeColumnDB() + " "
             + " FROM "
-            + CategData::tableDB() + ";";
+            + TypeData::tableDB() + ";";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
         throw ExceptionDB("CashAccoutCategory::GetAll : query error");
     }
 
-    Categories output;
+    Types output;
     while (query->next()) {
         output.push_back(getModelFromQuery(query.get()));
     }
@@ -110,9 +110,9 @@ Categories CashAccoutCategory::GetAll()
     return output;
 }
 
-Category CashAccoutCategory::getModelFromQuery(QSqlQuery *query)
+Type CashAccoutType::getModelFromQuery(QSqlQuery *query)
 {
-    Category category;
+    Type category;
 
     category.id = query->value(0).toUInt();
     category.name = query->value(1).toString();
@@ -142,8 +142,8 @@ void CashAccount::CreateTable()
             + " STRING DEFAULT(''),"
             + CashAccData::idIconColumnDB()
             + "  INTEGER REFERENCES "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB()
+            + TypeData::tableDB() + " ("
+            + TypeData::idColumnDB()
             + ") NOT NULL,"
             + CashAccData::colorColumnDB()
             + " STRING DEFAULT ('#000000'),"
@@ -166,8 +166,8 @@ void CashAccount::CreateTable()
             + " BOOLEAN NOT NULL DEFAULT (0),"
             + CashAccData::idCashAccountCategoryColumnDB()
             + " INTEGER REFERENCES "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB()
+            + TypeData::tableDB() + " ("
+            + TypeData::idColumnDB()
             + ") NOT NULL);";
 
     auto [query, result] = MakeQuery(text);
