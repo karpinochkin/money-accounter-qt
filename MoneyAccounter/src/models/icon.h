@@ -1,19 +1,23 @@
 #ifndef ICON_H
 #define ICON_H
 
-#include <QString>
+#include "basemodel.h"
 
 namespace Models {
 
-class Icon {
+class Icon : public Base {
 public:
-    uint id;
     QString path;
 
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || path.isEmpty());
     }
+
+    bool isCorrectDB() const override {
+        return isCorrect();
+    }
 };
+
 }
 
 #endif // ICON_H

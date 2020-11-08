@@ -10,21 +10,24 @@ namespace Models {
 
 using Decimal = declib::decimal<2>;
 
-struct CashAccountCategorySettings {
+struct CashAccountTypeSettings {
     bool isIncludeRefund;
     bool isIncludeDebt;
     bool isIncludePurpose;
 };
 
-class CashAccountType {
+class CashAccountType : public Base {
 public:
-    uint id;
     QString name;
     QString description;
-    CashAccountCategorySettings settings{};
+    CashAccountTypeSettings settings{};
 
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || name.isEmpty());
+    }
+
+    bool isCorrectDB() const override {
+        return isCorrect();
     }
 };
 
@@ -33,9 +36,8 @@ struct CashAccountSettings {
     bool displayInExpenses;
 };
 
-class CashAccount {
+class CashAccount : public Base {
 public:
-    uint id;
     QString name;
     QString description;
     Icon icon {};
@@ -48,14 +50,12 @@ public:
     CashAccountSettings settings {};
     CashAccountType category{};
 
-    // checking for model
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || !icon.isCorrect()
                  || !currency.isCorrect() || !category.isCorrect());
     }
 
-    // checking model for db table
-    bool isCorrectTable() const {
+    bool isCorrectDB() const override {
         return !(id < 1 || name.isEmpty() || icon.id < 1
                  || currency.id < 1 || category.id < 1);
     }

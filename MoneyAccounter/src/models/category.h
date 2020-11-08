@@ -7,19 +7,18 @@
 
 namespace Models {
 
-struct Category {
-    uint id{};
+struct Category : public Base {
     QString name;
     QString description;
     Currency currency{};
     Icon icon{};
     Color color;
 
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || !currency.isCorrect() || !icon.isCorrect());
     }
 
-    bool isCorrectTable() const {
+    bool isCorrectDB() const override {
         return !(id < 1 || name.isEmpty() || currency.id < 1 || icon.id < 1);
     }
 

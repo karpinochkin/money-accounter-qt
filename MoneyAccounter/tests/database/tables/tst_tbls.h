@@ -40,14 +40,23 @@ TEST(currency_table_test, create_table) {
 }
 
 TEST(currency_table_test, add_test) {
-    currency->Add(Models::Currency {
-                      1, "Доллар США", Symbols {
-                      }
-                  });
-    currency->Add(Models::Currency {
-                      2, "Евро", Symbols {
-                      }
-                  });
+    Models::Currency currency_;
+    currency_.id = 1;
+    currency_.name = "dollar usa";
+    currency->Add(currency_);
+
+    currency_.id = 2;
+    currency_.name = "Euro";
+    currency->Add(currency_);
+
+//    currency->Add(Models::Currency {
+//                      1, "Доллар США", Symbols {
+//                      }
+//                  });
+//    currency->Add(Models::Currency {
+//                      2, "Евро", Symbols {
+//                      }
+//                  });
 
     QString text = "select " + DB::Tables::Data::Currency::nameColumnDB()
             + " from " + DB::Tables::Data::Currency::tableDB()
@@ -56,7 +65,7 @@ TEST(currency_table_test, add_test) {
     auto [query, result] = currency->MakeQuery(text);
     ASSERT_TRUE(result);
     if(query->next()) {
-        ASSERT_EQ(query->value(0).toString(), "Евро");
+        ASSERT_EQ(query->value(0).toString(), "Euro");
     }
 }
 
@@ -65,7 +74,7 @@ TEST(currency_table_test, get_test) {
 
     ASSERT_FALSE(model.isCorrect());
     ASSERT_EQ(model.id, 2);
-    ASSERT_EQ(model.name, "Евро");
+    ASSERT_EQ(model.name, "Euro");
     ASSERT_TRUE(model.symbols.isEmpty());
 }
 
@@ -76,12 +85,12 @@ TEST(currency_table_test, get_all_test) {
 
     ASSERT_FALSE(models.at(0).isCorrect());
     ASSERT_EQ(models.at(0).id, 1);
-    ASSERT_EQ(models.at(0).name, "Доллар США");
+    ASSERT_EQ(models.at(0).name, "dollar usa");
     ASSERT_TRUE(models.at(0).symbols.isEmpty());
 
     ASSERT_FALSE(models.at(1).isCorrect());
     ASSERT_EQ(models.at(1).id, 2);
-    ASSERT_EQ(models.at(1).name, "Евро");
+    ASSERT_EQ(models.at(1).name, "Euro");
     ASSERT_TRUE(models.at(1).symbols.isEmpty());
 }
 /// *** *** ///
@@ -103,9 +112,21 @@ TEST(currency_table_test, create_table_sym) {
 }
 
 TEST(currency_table_test, add_sym) {
-    symbols->Add(Sym { 1, "$", 1 });
-    symbols->Add(Sym { 2, "$$", 2 });
-    symbols->Add(Sym { 3, "$$$", 1 });
+    Sym sym_;
+    sym_.id = 1;
+    sym_.symbol = "$";
+    sym_.idCurrency = 1;
+    symbols->Add(sym_);
+
+    sym_.id = 2;
+    sym_.symbol = "$$";
+    sym_.idCurrency = 2;
+    symbols->Add(sym_);
+
+    sym_.id = 3;
+    sym_.symbol = "$$$";
+    sym_.idCurrency = 1;
+    symbols->Add(sym_);
 
     QString text = "select " + DB::Tables::Data::CurrencySymbol::symbolColumnDB() + ", "
             + DB::Tables::Data::CurrencySymbol::idCorrencyColumnDB()
@@ -187,9 +208,18 @@ TEST(icon_table_test, CreateTable) {
 }
 
 TEST(icon_table_test, Add) {
-    icon->Add(Models::Icon {1, "path1"});
-    icon->Add(Models::Icon {2, "path12"});
-    icon->Add(Models::Icon {3, "path123"});
+    Models::Icon icon_;
+    icon_.id = 1;
+    icon_.path = "path1";
+    icon->Add(icon_);
+
+    icon_.id = 2;
+    icon_.path = "path12";
+    icon->Add(icon_);
+
+    icon_.id = 3;
+    icon_.path = "path123";
+    icon->Add(icon_);
 
     QString text = "select " + DB::Tables::Data::Icon::pathColumnDB()
             + " from " + DB::Tables::Data::Icon::tableDB()

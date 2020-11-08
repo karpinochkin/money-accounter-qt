@@ -316,7 +316,7 @@ void DB::Controllers::QCashAccount::isCashAccountCorrect(const CashAcc &model) c
 
 void DB::Controllers::QCashAccount::isCashAccountCorrectForDB(const CashAcc &model) const
 {
-    if (!model.isCorrectTable()) {
+    if (!model.isCorrectDB()) {
         throw ExceptionDB("QCashAccount::isCashAccountCorrectForDB : model is not correct");
     }
 }
@@ -428,7 +428,7 @@ void DB::Controllers::QCategory::isCategoryCorrect(const Models::Category &model
 
 void DB::Controllers::QCategory::isCategoryCorrectForDB(const Models::Category &model)
 {
-    if (!model.isCorrectTable()) {
+    if (!model.isCorrectDB()) {
         throw ExceptionDB("QCategory db : model is not correct");
     }
 }

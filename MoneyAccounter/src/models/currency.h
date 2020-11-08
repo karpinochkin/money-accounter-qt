@@ -1,35 +1,35 @@
 #ifndef CURRENCY_H
 #define CURRENCY_H
 
-#include <QList>
+#include "basemodel.h"
 
 namespace Models {
 
-///
-/// \brief The CurrencySymbol model
-///
-class CurrencySymbol {
+class CurrencySymbol : public Base {
 public:
-    uint id;
     QString symbol;
     uint idCurrency;
 
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || symbol.isEmpty() || idCurrency < 1);
+    }
+
+    bool isCorrectDB() const override {
+        return isCorrect();
     }
 };
 
-///
-/// \brief The Currency model
-///
-class Currency {
+class Currency : public Base {
 public:
-    uint id;
     QString name;
     QList <CurrencySymbol> symbols;
 
-    bool isCorrect() const {
+    bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || std::empty(symbols));
+    }
+
+    bool isCorrectDB() const override {
+        return isCorrect();
     }
 };
 

@@ -88,9 +88,10 @@ Icons QIcon::GetAll()
 
 Models::Icon QIcon::getModelFromQuery(QSqlQuery *query)
 {
-    return Models::Icon { query->value(0).toUInt(),
-                query->value(1).toString()
-    };
+   Models::Icon icon;
+   icon.id = query->value(0).toUInt();
+   icon.path = query->value(1).toString();
+   return icon;
 }
 
 }

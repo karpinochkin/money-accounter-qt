@@ -123,10 +123,11 @@ Symbols QCurrencySymbol::GetAll()
 
 Sym QCurrencySymbol::getModelFromQuery(QSqlQuery *query)
 {
-    return Sym { query->value(0).toUInt(),
-                query->value(1).toString(),
-                query->value(2).toUInt()
-    };
+    Sym sym;
+    sym.id = query->value(0).toUInt();
+    sym.symbol = query->value(1).toString();
+    sym.idCurrency = query->value(2).toUInt();
+    return sym;
 }
 
 QCurrency::QCurrency(QSqlDatabase &database, QObject *parent)
@@ -215,10 +216,11 @@ Currencies QCurrency::GetAll()
 
 Currency QCurrency::getModelFromQuery(QSqlQuery *query)
 {
-    return Models::Currency { query->value(0).toUInt(),
-                query->value(1).toString(),
-                Symbols {}
-    };
+    Models::Currency currency{};
+    currency.id = query->value(0).toUInt();
+    currency.name = query->value(1).toString();
+//    currency.symbols = Symbols {};
+    return currency;
 }
 
 }

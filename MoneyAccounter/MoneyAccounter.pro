@@ -4,8 +4,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-TEMPLATE = subdirs
-SUBDIRS += tests/tests.pro
+#TEMPLATE = subdirs
+#SUBDIRS += tests/tests.pro
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
@@ -39,6 +39,7 @@ HEADERS += \
     src/database/tables/currencytable.h \
     src/database/tables/icontable.h \
     src/database/tables/tables.h \
+    src/models/basemodel.h \
     src/models/category.h \
     src/models/color.h \
     src/models/cashaccount.h \

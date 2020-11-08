@@ -38,7 +38,11 @@ Symbols QCurrencyFiller::getSymbols(const KIDRow &row, uint currencyID, uint &sy
 
     for (auto symbols : row.array_objects) {
         for (auto sym : symbols) {
-            output.push_back(Sym { symID++, sym(), currencyID });
+            Sym _sym;
+            _sym.id = symID++;
+            _sym.symbol = sym();
+            _sym.idCurrency = currencyID;
+            output.push_back(_sym);
         }
     }
     return output;

@@ -49,7 +49,11 @@ TEST(currency_model_test, isCorrect) {
     ASSERT_FALSE(currency.isCorrect());
 
     currency.id = 0;
-    currency.symbols.push_back(Models::CurrencySymbol {1,"2",1});
+    Models::CurrencySymbol sym_;
+    sym_.id = 1;
+    sym_.symbol = "2";
+    sym_.idCurrency = 1;
+    currency.symbols.push_back(sym_);
     ASSERT_FALSE(currency.isCorrect());
 
     currency.id = 1;

@@ -22,15 +22,46 @@ TEST(currency_controller_test, create_tables) {
 }
 
 TEST(currency_controller_test, add_currency) {
-    ASSERT_TRUE(currency->Add(Models::Currency {1, "Доллар США", Symbols {
-                                      Sym {1, "$", 1},
-                                      Sym {2, "US$", 1},
-                                      Sym {3, "USD", 1}
-                                  }}));
-    ASSERT_TRUE(currency->Add(Models::Currency {2, "Евро", Symbols {
-                                      Sym {4, "€", 2},
-                                      Sym {5, "EUR", 2}
-                                  }}));
+    Models::Currency currency_;
+    currency_.id = 1;
+    currency_.name = "dollar usa";
+
+    Models::CurrencySymbol sym_;
+    sym_.id = 1;
+    sym_.symbol = "$";
+    sym_.idCurrency = 1;
+    currency_.symbols.push_back(sym_);
+    sym_.id = 2;
+    sym_.symbol = "US$";
+    sym_.idCurrency = 1;
+    currency_.symbols.push_back(sym_);
+    sym_.id = 3;
+    sym_.symbol = "USD";
+    sym_.idCurrency = 1;
+    currency_.symbols.push_back(sym_);
+    ASSERT_TRUE(currency->Add(currency_));
+
+    currency_.id = 2;
+    currency_.name = "Euro";
+    sym_.id = 4;
+    sym_.symbol = "€";
+    sym_.idCurrency = 2;
+    currency_.symbols.push_back(sym_);
+    sym_.id = 5;
+    sym_.symbol = "EUR";
+    sym_.idCurrency = 2;
+    currency_.symbols.push_back(sym_);
+    ASSERT_TRUE(currency->Add(currency_));
+
+//    ASSERT_TRUE(currency->Add(Models::Currency {1, "Доллар США", Symbols {
+//                                      Sym {1, "$", 1},
+//                                      Sym {2, "US$", 1},
+//                                      Sym {3, "USD", 1}
+//                                  }}));
+//    ASSERT_TRUE(currency->Add(Models::Currency {2, "Евро", Symbols {
+//                                      Sym {4, "€", 2},
+//                                      Sym {5, "EUR", 2}
+//                                  }}));
 }
 
 TEST(currency_controller_test, get_currency) {
@@ -38,7 +69,7 @@ TEST(currency_controller_test, get_currency) {
 
     ASSERT_TRUE(model.isCorrect());
     ASSERT_EQ(2, model.id);
-    ASSERT_EQ("Евро", model.name);
+    ASSERT_EQ("Euro", model.name);
 
     ASSERT_EQ(2, std::size(model.symbols));
     ASSERT_EQ(4, model.symbols.at(0).id);
@@ -58,7 +89,7 @@ TEST(currency_controller_test, get_currencies) {
     ASSERT_TRUE(models.at(1).isCorrect());
 
     ASSERT_EQ(2, models.at(1).id);
-    ASSERT_EQ("Евро", models.at(1).name);
+    ASSERT_EQ("Euro", models.at(1).name);
     ASSERT_EQ(2, std::size(models.at(1).symbols));
     ASSERT_EQ(4, models.at(1).symbols.at(0).id);
     ASSERT_EQ("€", models.at(1).symbols.at(0).symbol);
@@ -69,7 +100,7 @@ TEST(currency_controller_test, get_currencies) {
     ASSERT_EQ(2, models.at(1).symbols.at(1).idCurrency);
 
     ASSERT_EQ(3, std::size(models.at(0).symbols));
-    ASSERT_EQ("Доллар США", models.at(0).name);
+    ASSERT_EQ("dollar usa", models.at(0).name);
 }
 
 TEST(icon_controller_test, CreateTables) {
@@ -77,8 +108,13 @@ TEST(icon_controller_test, CreateTables) {
 }
 
 TEST(icon_controller_test, Add) {
-    ASSERT_TRUE(icon->Add(Models::Icon {2, "77777"}));
-    ASSERT_TRUE(icon->Add(Models::Icon {88, "8888888"}));
+    Models::Icon icon_;
+    icon_.id = 2;
+    icon_.path = "77777";
+    ASSERT_TRUE(icon->Add(icon_));
+    icon_.id = 88;
+    icon_.path = "8888888";
+    ASSERT_TRUE(icon->Add(icon_));
 }
 
 TEST(icon_controller_test, Get) {
