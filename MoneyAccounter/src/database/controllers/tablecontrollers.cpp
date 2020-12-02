@@ -1,10 +1,9 @@
 #include "tablecontrollers.h"
 
 DB::Controllers::QCurrency::QCurrency(QSqlDatabase &database, QObject *parent)
-    : QObject(parent)
+    : QController(database, parent)
 {
     currencyTable = CreateScope<Tables::QCurrency>(database, this);
-    symbolTable = CreateScope<Tables::QCurrencySymbol>(database, this);
 
     if (!CreateTables()) {
         throw ExceptionDB("currency tables is not created");
@@ -15,7 +14,6 @@ bool DB::Controllers::QCurrency::CreateTables()
 {
     try {
         currencyTable->CreateTable();
-        symbolTable->CreateTable();
         return true;
     } catch (const  ExceptionDB &err) {
         qDebug() << err.what();
@@ -23,14 +21,10 @@ bool DB::Controllers::QCurrency::CreateTables()
     }
 }
 
-bool DB::Controllers::QCurrency::Add(const Models::Currency &model)
+bool DB::Controllers::QCurrency::Add(const MCurrency &model)
 {
     try {
-        isCurrencyCorrect(model);
         currencyTable->Add(model);
-        for (auto symbol : model.symbols) {
-            symbolTable->Add(symbol);
-        }
         return true;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
@@ -38,50 +32,45 @@ bool DB::Controllers::QCurrency::Add(const Models::Currency &model)
     }
 }
 
-Models::Currency DB::Controllers::QCurrency::Get(uint id)
+bool DB::Controllers::QCurrency::Edit(const MCurrency &model)
 {
     try {
-        auto model = currencyTable->Get(id);
-        model.symbols = symbolTable->GetByCurrencyID(id);
-        isCurrencyCorrect(model);
-        return model;
+        currencyTable->Edit(model);
+        return true;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Models::Currency {};
+        return false;
     }
 }
 
-Currencies DB::Controllers::QCurrency::GetAll()
+MCurrency DB::Controllers::QCurrency::Get(uint id)
 {
     try {
-        Currencies output;
+        auto model = std::dynamic_pointer_cast<MCurrency>(currencyTable->Get(id));
+        isModelCorrect(model.get());
+        return *(model);
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return MCurrency {};
+    }
+}
 
-        auto models = currencyTable->GetAll();
-        for (auto model : models) {
-            try {
-                model.symbols = symbolTable->GetByCurrencyID(model.id);
-                isCurrencyCorrect(model);
-                output.push_back(model);
-            } catch (const ExceptionDB &err) {
-                qDebug() << err.what();
-            }
+MCurrencies DB::Controllers::QCurrency::GetAll()
+{
+    try {
+        MCurrencies models;
+        for (auto m : currencyTable->GetAll()) {
+            models.push_back(unpack<MCurrency>(m));
         }
-        return output;
+        return models;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Currencies {};
-    }
-}
-
-void DB::Controllers::QCurrency::isCurrencyCorrect(const Models::Currency &model) const
-{
-    if (!model.isCorrect()) {
-        throw ExceptionDB("QCurrency::isCurrencyCorrect : model is not correct");
+        return MCurrencies {};
     }
 }
 
 DB::Controllers::QIcon::QIcon(QSqlDatabase &database, QObject *parent)
-    : QObject(parent)
+    : QController(database, parent)
 {
     iconTable = CreateScope<Tables::QIcon>(database, this);
 
@@ -101,10 +90,9 @@ bool DB::Controllers::QIcon::CreateTables()
     }
 }
 
-bool DB::Controllers::QIcon::Add(const Models::Icon &model)
+bool DB::Controllers::QIcon::Add(const MIcon &model)
 {
     try {
-        isIconCorrect(model);
         iconTable->Add(model);
         return true;
     } catch (const ExceptionDB &err) {
@@ -113,38 +101,34 @@ bool DB::Controllers::QIcon::Add(const Models::Icon &model)
     }
 }
 
-Models::Icon DB::Controllers::QIcon::Get(uint id)
+MIcon DB::Controllers::QIcon::Get(uint id)
 {
     try {
-        auto model = iconTable->Get(id);
-        isIconCorrect(model);
-        return model;
+        auto model = std::dynamic_pointer_cast<MIcon>(iconTable->Get(id));
+        isModelCorrect(model.get());
+        return *(model);
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Models::Icon {};
+        return MIcon {};
     }
 }
 
-Icons DB::Controllers::QIcon::GetAll()
+MIcons DB::Controllers::QIcon::GetAll()
 {
     try {
-        auto models = iconTable->GetAll();
+        MIcons models;
+        for (auto m : iconTable->GetAll()) {
+            models.push_back(unpack<MIcon>(m));
+        }
         return models;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Icons {};
-    }
-}
-
-void DB::Controllers::QIcon::isIconCorrect(const Models::Icon &model) const
-{
-    if (!model.isCorrect()) {
-        throw ExceptionDB("QIcon::isIconCorrect : model is not correct");
+        return MIcons {};
     }
 }
 
 DB::Controllers::QCashAccountType::QCashAccountType(QSqlDatabase &database, QObject *parent)
-    : QObject(parent)
+    : QController(database, parent)
 {
     cashAccCategory = CreateScope<Tables::CashAccoutType>(database, this);
 
@@ -164,10 +148,9 @@ bool DB::Controllers::QCashAccountType::CreateTables()
     }
 }
 
-bool DB::Controllers::QCashAccountType::Add(const Type &model)
+bool DB::Controllers::QCashAccountType::Add(const MCashAccType &model)
 {
     try {
-        isCategoryCorrect(model);
         cashAccCategory->Add(model);
         return true;
     } catch (const ExceptionDB &err) {
@@ -176,43 +159,42 @@ bool DB::Controllers::QCashAccountType::Add(const Type &model)
     }
 }
 
-Type DB::Controllers::QCashAccountType::Get(uint id)
+MCashAccType DB::Controllers::QCashAccountType::Get(uint id)
 {
     try {
-        auto model = cashAccCategory->Get(id);\
-        isCategoryCorrect(model);
-        return model;
+        auto model = std::dynamic_pointer_cast<MCashAccType>(cashAccCategory->Get(id));
+        isModelCorrect(model.get());
+        return *(model);
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Type {};
+        return MCashAccType {};
     }
 }
 
-Types DB::Controllers::QCashAccountType::GetAll()
+MCashAccTypes DB::Controllers::QCashAccountType::GetAll()
 {
     try {
-        auto models = cashAccCategory->GetAll();
+        MCashAccTypes models;
+        for (auto m : cashAccCategory->GetAll()) {
+            models.push_back(unpack<MCashAccType>(m));
+        }
         return models;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return Types {};
+        return MCashAccTypes {};
     }
 }
 
-void DB::Controllers::QCashAccountType::isCategoryCorrect(const Type &model) const
+DB::Controllers::QCashAccount::QCashAccount(QCurrency *currency,
+                                            QIcon *icon,
+                                            QCashAccountType *cashAccType,
+                                            QSqlDatabase &database,
+                                            QObject *parent)
+    : QController(database, parent),
+      currencyCntrl(currency),
+      iconCntrl(icon),
+      cashAccTypeCntrl(cashAccType)
 {
-    if (!model.isCorrect()) {
-        throw ExceptionDB("QCashAccountCategory::isCategoryCorrect : model is not correct");
-    }
-}
-
-DB::Controllers::QCashAccount::QCashAccount(QSqlDatabase &database, QObject *parent)
-    : QObject(parent)
-{
-    currencyCntrl = CreateRef<QCurrency>(database, this);
-    iconCntrl = CreateRef<QIcon>(database, this);
-    cashAccCategoryCntrl = CreateRef<QCashAccountType>(database, this);
-
     cashAccTable = CreateScope<Tables::CashAccount>(database, this);
 
     if (!CreateTables()) {
@@ -231,10 +213,9 @@ bool DB::Controllers::QCashAccount::CreateTables()
     }
 }
 
-bool DB::Controllers::QCashAccount::Add(const CashAcc &model)
+bool DB::Controllers::QCashAccount::Add(const MCashAcc &model)
 {
     try {
-        isCashAccountCorrectForDB(model);
         cashAccTable->Add(model);
 
         return true;
@@ -244,10 +225,9 @@ bool DB::Controllers::QCashAccount::Add(const CashAcc &model)
     }
 }
 
-bool DB::Controllers::QCashAccount::Edit(const CashAcc &model)
+bool DB::Controllers::QCashAccount::Edit(const MCashAcc &model)
 {
     try {
-        isCashAccountCorrectForDB(model);
         cashAccTable->Edit(model);
         return true;
     } catch (const ExceptionDB &err) {
@@ -256,43 +236,43 @@ bool DB::Controllers::QCashAccount::Edit(const CashAcc &model)
     }
 }
 
-CashAcc DB::Controllers::QCashAccount::Get(uint id)
+MCashAcc DB::Controllers::QCashAccount::Get(uint id)
 {
     try {
-        auto model = cashAccTable->Get(id);
-        model.icon = iconCntrl->Get(model.icon.id);
-        model.currency = currencyCntrl->Get(model.currency.id);
-        model.category = cashAccCategoryCntrl->Get(model.category.id);
-        isCashAccountCorrect(model);
+        auto model = std::dynamic_pointer_cast<MCashAcc>(cashAccTable->Get(id));
+        model->icon = iconCntrl->Get(model->icon.id);
+        model->currency = currencyCntrl->Get(model->currency.id);
+        model->type = cashAccTypeCntrl->Get(model->type.id);
+        isModelCorrect(model.get());
 
-        return model;
+        return *(model);
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return CashAcc {};
+        return MCashAcc {};
     }
 }
 
-CashAccs DB::Controllers::QCashAccount::GetAll()
+MCashAccs DB::Controllers::QCashAccount::GetAll()
 {
     try {
-        CashAccs output;
+        MCashAccs models;
 
-        auto models = cashAccTable->GetAll();
-        for (auto model : models) {
+        for (auto variant : cashAccTable->GetAll()) {
             try {
-                model.icon = iconCntrl->Get(model.icon.id);
-                model.currency = currencyCntrl->Get(model.currency.id);
-                model.category = cashAccCategoryCntrl->Get(model.category.id);
-                isCashAccountCorrect(model);
-                output.push_back(model);
+                auto m = unpack<MCashAcc>(variant);
+                m.icon = iconCntrl->Get(m.icon.id);
+                m.currency = currencyCntrl->Get(m.currency.id);
+                m.type = cashAccTypeCntrl->Get(m.type.id);
+                isModelCorrect(&m);
+                models.push_back(m);
             } catch (const ExceptionDB &err) {
                 qDebug() << err.what();
             }
         }
-        return output;
+        return models;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return CashAccs {};
+        return MCashAccs {};
     }
 }
 
@@ -307,25 +287,11 @@ bool DB::Controllers::QCashAccount::Remove(uint id)
     }
 }
 
-void DB::Controllers::QCashAccount::isCashAccountCorrect(const CashAcc &model) const
+DB::Controllers::QCategory::QCategory(QCurrency *currencyCntrl, QIcon *iconCntrl, QSqlDatabase &database, QObject *parent)
+    : QController(database, parent),
+      currencyCntrl(currencyCntrl),
+      iconCntrl(iconCntrl)
 {
-    if (!model.isCorrect()) {
-        throw ExceptionDB("QCashAccount::isCashAccountCorrect : model is not correct");
-    }
-}
-
-void DB::Controllers::QCashAccount::isCashAccountCorrectForDB(const CashAcc &model) const
-{
-    if (!model.isCorrectDB()) {
-        throw ExceptionDB("QCashAccount::isCashAccountCorrectForDB : model is not correct");
-    }
-}
-
-DB::Controllers::QCategory::QCategory(QSqlDatabase &database, QObject *parent)
-    : QObject(parent)
-{
-    currencyCntrl = CreateRef<QCurrency>(database, this);
-    iconCntrl = CreateRef<QIcon>(database, this);
     category = CreateScope<Tables::Category>(database, this);
 
     if (!CreateTables()) {
@@ -344,10 +310,9 @@ bool DB::Controllers::QCategory::CreateTables()
     }
 }
 
-bool DB::Controllers::QCategory::Add(const Models::Category &model)
+bool DB::Controllers::QCategory::Add(const MCategory &model)
 {
     try {
-        isCategoryCorrectForDB(model);
         category->Add(model);
 
         return true;
@@ -357,10 +322,9 @@ bool DB::Controllers::QCategory::Add(const Models::Category &model)
     }
 }
 
-bool DB::Controllers::QCategory::Edit(const Models::Category &model)
+bool DB::Controllers::QCategory::Edit(const MCategory &model)
 {
     try {
-        isCategoryCorrectForDB(model);
         category->Edit(model);
         return true;
     } catch (const ExceptionDB &err) {
@@ -369,42 +333,42 @@ bool DB::Controllers::QCategory::Edit(const Models::Category &model)
     }
 }
 
-Models::Category DB::Controllers::QCategory::Get(uint id)
+MCategory DB::Controllers::QCategory::Get(uint id)
 {
     try {
-        auto model = category->Get(id);
-        model.icon = iconCntrl->Get(model.icon.id);
-        model.currency = currencyCntrl->Get(model.currency.id);
-        isCategoryCorrect(model);
+        auto model = std::dynamic_pointer_cast<MCategory>(category->Get(id));
+        model->icon = iconCntrl->Get(model->icon.id);
+        model->currency = currencyCntrl->Get(model->currency.id);
+        isModelCorrect(model.get());
 
-        return model;
+        return *(model);
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        Models::Category model;
+        MCategory model;
         return model;
     }
 }
 
-QList<Models::Category> DB::Controllers::QCategory::GetAll()
+MCategories DB::Controllers::QCategory::GetAll()
 {
     try {
-        QList<Models::Category> output;
+        MCategories models;
 
-        auto models = category->GetAll();
-        for (auto model : models) {
+        for (auto variant : category->GetAll()) {
             try {
-                model.icon = iconCntrl->Get(model.icon.id);
-                model.currency = currencyCntrl->Get(model.currency.id);
-                isCategoryCorrect(model);
-                output.push_back(model);
+                auto m = unpack<MCategory>(variant);
+                m.icon = iconCntrl->Get(m.icon.id);
+                m.currency = currencyCntrl->Get(m.currency.id);
+                isModelCorrect(&m);
+                models.push_back(m);
             } catch (const ExceptionDB &err) {
                 qDebug() << err.what();
             }
         }
-        return output;
+        return models;
     } catch (const ExceptionDB &err) {
         qDebug() << err.what();
-        return QList<Models::Category>{};
+        return MCategories{};
     }
 }
 
@@ -419,16 +383,101 @@ bool DB::Controllers::QCategory::Remove(uint id)
     }
 }
 
-void DB::Controllers::QCategory::isCategoryCorrect(const Models::Category &model)
+DB::Controllers::QTransaction::QTransaction(QCashAccount *cashAccCntrl,
+                                            QCategory *categoryCntrl,
+                                            QSqlDatabase &database,
+                                            QObject *parent)
+    : QController(database, parent),
+      cashAccCntrl(cashAccCntrl),
+      categoryCntrl(categoryCntrl)
 {
-    if (!model.isCorrect()) {
-        throw ExceptionDB("QCategory model is not correct");
+    transaction = CreateScope<Tables::Transaction>(database, this);
+
+    if (!CreateTables()) {
+        throw ExceptionDB("transaction tables is not created");
     }
 }
 
-void DB::Controllers::QCategory::isCategoryCorrectForDB(const Models::Category &model)
+bool DB::Controllers::QTransaction::CreateTables()
 {
-    if (!model.isCorrectDB()) {
-        throw ExceptionDB("QCategory db : model is not correct");
+    try {
+        transaction->CreateTable();
+        return true;
+    } catch (const  ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+bool DB::Controllers::QTransaction::Add(const MTransact &model)
+{
+    try {
+        transaction->Add(model);
+
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+bool DB::Controllers::QTransaction::Edit(const MTransact &model)
+{
+    try {
+        transaction->Edit(model);
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
+    }
+}
+
+MTransact DB::Controllers::QTransaction::Get(uint id)
+{
+    try {
+        auto model = std::dynamic_pointer_cast<MTransact>(transaction->Get(id));
+        model->cashAccount = cashAccCntrl->Get(model->cashAccount.id);
+        model->category = categoryCntrl->Get(model->category.id);
+        isModelCorrect(model.get());
+
+        return *(model);
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        MTransact model;
+        return model;
+    }
+}
+
+MTransactions DB::Controllers::QTransaction::GetAll()
+{
+    try {
+        MTransactions models;
+
+        for (auto variant : transaction->GetAll()) {
+            try {
+                auto m = unpack<MTransact>(variant);
+                m.cashAccount = cashAccCntrl->Get(m.cashAccount.id);
+                m.category = categoryCntrl->Get(m.category.id);
+                isModelCorrect(&m);
+                models.push_back(m);
+            } catch (const ExceptionDB &err) {
+                qDebug() << err.what();
+            }
+        }
+        return models;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return MTransactions{};
+    }
+}
+
+bool DB::Controllers::QTransaction::Remove(uint id)
+{
+    try {
+        transaction->Remove(id);
+        return true;
+    } catch (const ExceptionDB &err) {
+        qDebug() << err.what();
+        return false;
     }
 }

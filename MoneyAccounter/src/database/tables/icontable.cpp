@@ -11,27 +11,29 @@ QIcon::QIcon(QSqlDatabase &database, QObject *parent)
 void QIcon::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + Data::Icon::tableDB() + " ("
-            + Data::Icon::idColumnDB() + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + Data::Icon::pathColumnDB() + " STRING UNIQUE NOT NULL DEFAULT defaultpath);";
+            + DataIcon::tableName() + " ("
+            + DataIcon::id() + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL CHECK("
+                                       + DataIcon::id() + " > 0),"
+            + DataIcon::path() + " STRING UNIQUE NOT NULL CHECK("
+                                         + DataIcon::path() + " != '') DEFAULT defaultpath);";
 
     auto [query, result] = MakeQuery(text);
 
             if (!result) {
         throw ExceptionDB("QIcon::CreateTable() : query error");
     }
-    qDebug() << Data::Icon::tableDB() + " is created";
+    qDebug() << DataIcon::tableName() + " is created";
 }
 
-void QIcon::Add(const Models::Icon &model)
+void QIcon::Add(const MBase &model)
 {
-    QString text = "INSERT OR IGNORE INTO "
-            + Data::Icon::tableDB() + " ("
-            + Data::Icon::idColumnDB() + ", "
-            + Data::Icon::pathColumnDB() + " "
+    QString text = "INSERT INTO "
+            + DataIcon::tableName() + " ("
+            + DataIcon::id() + ", "
+            + DataIcon::path() + " "
             + ") VALUES ('"
             + S_NUM(model.id) + "','"
-            + model.path + "');";
+            + static_cast<const MIcon&>(model).path + "');";
 
     auto [query, result] = MakeQuery(text);
 
@@ -40,15 +42,15 @@ void QIcon::Add(const Models::Icon &model)
     }
 }
 
-Models::Icon QIcon::Get(uint id)
+Ref<MBase> QIcon::Get(uint id)
 {
     QString text = "SELECT "
-            + Data::Icon::idColumnDB() + ", "
-            + Data::Icon::pathColumnDB() + " "
+            + DataIcon::id() + ", "
+            + DataIcon::path() + " "
             + " FROM "
-            + Data::Icon::tableDB()
+            + DataIcon::tableName()
             + " WHERE "
-            + Data::Icon::idColumnDB() + " = '"
+            + DataIcon::id() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
@@ -56,21 +58,26 @@ Models::Icon QIcon::Get(uint id)
         throw ExceptionDB("QIcon::Get : query error");
     }
 
-    Models::Icon output;
+    auto output = CreateRef<MIcon>();
     if(query.get()->next()) {
-        output = getModelFromQuery(query.get());
+        *output = getModelFromQuery(query.get());
     }
 
     return output;
 }
 
-Icons QIcon::GetAll()
+void QIcon::Remove(uint id)
+{
+    QBase::removeRow(id, DataIcon::tableName(), DataIcon::id());
+}
+
+QVariantList QIcon::GetAll()
 {
     QString text = "SELECT "
-            + Data::Icon::idColumnDB() + ", "
-            + Data::Icon::pathColumnDB() + " "
+            + DataIcon::id() + ", "
+            + DataIcon::path() + " "
             + " FROM "
-            + Data::Icon::tableDB() + ";";
+            + DataIcon::tableName() + ";";
 
     auto [query, result] = MakeQuery(text);;
 
@@ -78,17 +85,32 @@ Icons QIcon::GetAll()
         throw ExceptionDB("QIcon::GetAll() : query error");
     }
 
-    Icons output;
+    QVariantList output;
     while (query.get()->next()) {
-        output.push_back(getModelFromQuery(query.get()));
+        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
     }
 
     return output;
 }
 
-Models::Icon QIcon::getModelFromQuery(QSqlQuery *query)
+void QIcon::Edit(const MBase &model)
 {
-   Models::Icon icon;
+    QString text = "UPDATE "
+            + DataIcon::tableName()
+            + " SET "
+            + DataIcon::path() + " = '" + static_cast<const MIcon&>(model).path + "' "
+            + " WHERE "
+            + DataIcon::id() + " = '" + S_NUM(model.id) + "';";
+
+    auto [query, result] = MakeQuery(text);
+
+            if (!result) {
+        throw ExceptionDB("QIcon::Edit : query error");
+    }
+}
+MIcon QIcon::getModelFromQuery(QSqlQuery *query)
+{
+   MIcon icon;
    icon.id = query->value(0).toUInt();
    icon.path = query->value(1).toString();
    return icon;

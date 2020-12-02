@@ -14,10 +14,13 @@ public:
     virtual ~Base() = default;
     uint id {};
 
-    virtual bool isCorrect() const = 0; /// full model checking
-    virtual bool isCorrectDB() const = 0; /// db model checking
+    virtual bool isCorrect() const {
+        return !(id < 1);
+    }
 };
 
 }
+
+using MBase = Models::Base;
 
 #endif // BASEMODEL_H

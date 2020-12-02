@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <QString>
+#include <QVariant>
 
 #define S_NUM(...) QString::number(__VA_ARGS__)
 
@@ -25,6 +26,17 @@ using Ref = std::shared_ptr<T>;
 template<typename T, typename ... Args>
 constexpr Ref<T> CreateRef(Args&& ... args) {
     return std::make_shared<T>(std::forward<Args>(args)...);
+}
+
+///
+/// QVariant unpack
+///
+template< typename T >
+T unpack( const QVariant& var, const T& defVal = T() ) {
+    if( var.isValid() && var.canConvert< T >() ) {
+        return var.value< T >();
+    }
+    return defVal;
 }
 
 #endif // BASE_H

@@ -3,12 +3,9 @@
 
 #include "basetable.h"
 #include "../../core/base.h"
-#include "../../core/cashaccountsnames.h"
+#include "../../models/cashaccount.h"
 
 namespace DB::Tables {
-
-using TypeData = Data::CashAccountType;
-using CashAccData = Data::CashAccount;
 
 class CashAccoutType : public QBase
 {
@@ -17,12 +14,14 @@ public:
     ~CashAccoutType() = default;
 
     void CreateTable() override;
-    void Add(const Type& model);
-    Type Get(uint id);
-    Types GetAll();
+    void Add(const MBase &model) override;
+    void Edit(const MBase &model) override;
+    Ref<MBase> Get(uint id) override;
+    void Remove(uint id) override;
+    QVariantList GetAll() override;
 
 private:
-    inline Type getModelFromQuery(QSqlQuery *query);
+    inline MCashAccType getModelFromQuery(QSqlQuery *query);
 };
 
 class CashAccount : public QBase
@@ -32,16 +31,19 @@ public:
     ~CashAccount() = default;
 
     void CreateTable() override;
-    void Add(const CashAcc& model);
-    void Edit(const CashAcc& model);
-    CashAcc Get(uint id);
-    CashAccs GetAll();
-    void Remove(uint id);
+    void Add(const MBase &model) override;
+    void Edit(const MBase &model) override;
+    void Remove(uint id) override;
+    Ref<MBase> Get(uint id) override;
+    QVariantList GetAll() override;
 
 private:
-    inline CashAcc getModelFromQuery(QSqlQuery *query);
+    MCashAcc getModelFromQuery(QSqlQuery *query);
 };
 
 }
+
+Q_DECLARE_METATYPE(MCashAccType);
+Q_DECLARE_METATYPE(MCashAcc);
 
 #endif // CASHACCOUTTABLE_H

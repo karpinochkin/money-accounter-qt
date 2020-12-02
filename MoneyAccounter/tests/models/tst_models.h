@@ -5,41 +5,6 @@
 #include <gmock/gmock-matchers.h>
 #include "../utils/models_utils.h"
 
-TEST(currency_sym_model_test, isCorrect) {
-    Models::CurrencySymbol sym{};
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 0;
-    sym.symbol = "";
-    sym.idCurrency = 0;
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 1;
-    sym.symbol = "";
-    sym.idCurrency = 0;
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 1;
-    sym.symbol = "";
-    sym.idCurrency = -1;
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 1;
-    sym.symbol = "";
-    sym.idCurrency = 1;
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 1;
-    sym.symbol = "2";
-    sym.idCurrency = 0;
-    ASSERT_FALSE(sym.isCorrect());
-
-    sym.id = 1;
-    sym.symbol = "1";
-    sym.idCurrency = 1;
-    ASSERT_TRUE(sym.isCorrect());
-}
-
 TEST(currency_model_test, isCorrect) {
     Models::Currency currency{};
     ASSERT_FALSE(currency.isCorrect());
@@ -49,11 +14,6 @@ TEST(currency_model_test, isCorrect) {
     ASSERT_FALSE(currency.isCorrect());
 
     currency.id = 0;
-    Models::CurrencySymbol sym_;
-    sym_.id = 1;
-    sym_.symbol = "2";
-    sym_.idCurrency = 1;
-    currency.symbols.push_back(sym_);
     ASSERT_FALSE(currency.isCorrect());
 
     currency.id = 1;
@@ -61,6 +21,7 @@ TEST(currency_model_test, isCorrect) {
     ASSERT_FALSE(currency.isCorrect());
 
     currency.name = "33";
+    currency.symbol = "#";
     ASSERT_TRUE(currency.isCorrect());
 }
 
@@ -129,16 +90,10 @@ TEST(category, isCorrect) {
     category.icon.id = 33;
     category.icon.path = 12;
     ASSERT_FALSE(category.isCorrect());
+    category.currency.symbol = "$";
 
-    Models::CurrencySymbol sym;
-    sym.id = 12;
-    sym.symbol = "@@";
-    sym.idCurrency = 16;
-    category.currency.symbols.push_back(sym);
     ASSERT_TRUE(category.isCorrect());
 
 }
-
-
 
 #endif // TST_MODELS_H

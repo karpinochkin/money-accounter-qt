@@ -6,6 +6,25 @@ QBase::QBase(QSqlDatabase &database, QObject *parent)
     : QObject(parent),
       db(database) {
     mutex = new QMutex();
+    execQuery("PRAGMA foreign_keys = ON;");
+}
+
+void QBase::removeRow(uint id, const QString &tableName, const QString &idColumnName)
+{
+    QString text = "DELETE FROM "
+            + tableName
+            + " WHERE "
+            + idColumnName
+            + " = '"
+            + S_NUM(id)
+            + "';";
+
+    auto [query, result] = MakeQuery(text);
+
+            if (!result) {
+        QString err = tableName + " : remove query error";
+        throw ExceptionDB(err.toStdString());
+    }
 }
 
 QBase::QBase::~QBase()

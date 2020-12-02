@@ -6,120 +6,150 @@
 #include "../tables/icontable.h"
 #include "../tables/cashaccouttable.h"
 #include "../tables/categorytable.h"
-
-namespace DB {
-
-class QDispatcher;
-}
+#include "../tables/transactiontable.h"
 
 namespace DB::Controllers {
+
+class QController : public QObject {
+public:
+    ~QController() = default;
+protected:
+    QController(QSqlDatabase &database, QObject *parent = nullptr) : QObject(parent) {
+        Q_UNUSED(database)
+    }
+
+    void isModelCorrect(const MBase *model) {
+        if (!model->isCorrect()) {
+            std::string err = "Controllers : model is not correct |  ";
+            err += typeid(model).name();
+            throw ExceptionDB(err);
+        }
+    };
+};
 
 ///
 /// \brief The QCurrencyController class - currency facade
 ///
-class QCurrency : public QObject {
+class QCurrency : public QController
+{
 public:
     explicit QCurrency(QSqlDatabase &database, QObject *parent = nullptr);
     ~QCurrency() = default;
 
     bool CreateTables();
-    bool Add(const Models::Currency &model);
-    Models::Currency Get(uint id);
-    Currencies GetAll();
+    bool Add(const MCurrency &model);
+    bool Edit(const MCurrency &model);
+    MCurrency Get(uint id);
+    MCurrencies GetAll();
 
 private:
     Scope<Tables::QCurrency> currencyTable;
-    Scope<Tables::QCurrencySymbol> symbolTable;
-
-    void isCurrencyCorrect(const Models::Currency &model) const;
 };
 
 ///
 /// \brief The QIcon class - icon facade
 ///
-class QIcon : public QObject {
+class QIcon : public QController {
 public:
     explicit QIcon(QSqlDatabase &database, QObject *parent = nullptr);
     ~QIcon() = default;
 
     bool CreateTables();
-    bool Add(const Models::Icon &model);
-    Models::Icon Get(uint id);
-    Icons GetAll();
+    bool Add(const MIcon &model);
+    MIcon Get(uint id);
+    MIcons GetAll();
 
 private:
     Scope<Tables::QIcon> iconTable;
-
-    void isIconCorrect(const Models::Icon &model) const;
 };
 
 ///
 /// \brief The QCashAccountCategory class - cash acc category facade
 ///
-class QCashAccountType : public QObject
+class QCashAccountType : public QController
 {
 public:
     explicit QCashAccountType(QSqlDatabase &database, QObject *parent = nullptr);
     ~QCashAccountType() = default;
 
     bool CreateTables();
-    bool Add(const Type &model);
-    Type Get(uint id);
-    Types GetAll();
+    bool Add(const MCashAccType &model);
+    MCashAccType Get(uint id);
+    MCashAccTypes GetAll();
 
 private:
     Scope<Tables::CashAccoutType> cashAccCategory;
-
-    void isCategoryCorrect(const Type &model) const;
 };
 
-class QCashAccount : public QObject
+class QCashAccount : public QController
 {
 public:
-    friend class DB::QDispatcher;
-
-    explicit QCashAccount(QSqlDatabase &database, QObject *parent = nullptr);
+    explicit QCashAccount(QCurrency *currency,
+                          QIcon *icon,
+                          QCashAccountType *cashAccType,
+                          QSqlDatabase &database,
+                          QObject *parent = nullptr);
     ~QCashAccount() = default;
 
     bool CreateTables();
-    bool Add(const CashAcc &model);
-    bool Edit(const CashAcc &model);
-    CashAcc Get(uint id);
-    CashAccs GetAll();
+    bool Add(const MCashAcc &model);
+    bool Edit(const MCashAcc &model);
+    MCashAcc Get(uint id);
+    MCashAccs GetAll();
     bool Remove(uint id);
 
 private:
-    Ref<QCurrency> currencyCntrl;
-    Ref<QIcon> iconCntrl;
-    Ref<QCashAccountType> cashAccCategoryCntrl;
-
     Scope<Tables::CashAccount> cashAccTable;
 
-    void isCashAccountCorrect(const CashAcc &model) const;
-    void isCashAccountCorrectForDB(const CashAcc &model) const;
+    QCurrency *currencyCntrl = nullptr;
+    QIcon *iconCntrl = nullptr;
+    QCashAccountType *cashAccTypeCntrl = nullptr;
 };
 
-class QCategory : public QObject
+class QCategory : public QController
 {
 public:
-    explicit QCategory(QSqlDatabase &database, QObject *parent = nullptr);
+    explicit QCategory(QCurrency *currencyCntrl,
+                       QIcon *iconCntrl,
+                       QSqlDatabase &database,
+                       QObject *parent = nullptr);
     ~QCategory() = default;
 
     bool CreateTables();
-    bool Add(const Models::Category& model);
-    bool Edit(const Models::Category &model);
-    Models::Category Get(uint id);
-    QList<Models::Category> GetAll();
+    bool Add(const MCategory &model);
+    bool Edit(const MCategory &model);
+    MCategory Get(uint id);
+    MCategories GetAll();
     bool Remove(uint id);
 
 private:
     Scope<Tables::Category> category;
-    Ref<QCurrency> currencyCntrl;
-    Ref<QIcon> iconCntrl;
 
-    void isCategoryCorrect(const Models::Category&);
-    void isCategoryCorrectForDB(const Models::Category&);
+    QCurrency *currencyCntrl = nullptr;
+    QIcon *iconCntrl = nullptr;
+};
 
+class QTransaction : public QController
+{
+public:
+    explicit QTransaction(QCashAccount* cashAccCntrl,
+                          QCategory* categoryCntrl,
+                          QSqlDatabase &database,
+                          QObject *parent = nullptr);
+    ~QTransaction() = default;
+
+    bool CreateTables();
+    bool Add(const MTransact &model);
+    bool Edit(const MTransact &model);
+    MTransact Get(uint id);
+    MTransactions GetAll();
+    bool Remove(uint id);
+
+private:
+    Scope<Tables::Transaction> transaction;
+
+    QCashAccount* cashAccCntrl = nullptr;
+    QCategory* categoryCntrl = nullptr;
 };
 
 }

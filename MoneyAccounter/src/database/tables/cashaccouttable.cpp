@@ -11,108 +11,153 @@ CashAccoutType::CashAccoutType(QSqlDatabase &database, QObject *parent)
 void CashAccoutType::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + TypeData::tableDB() + " ("
-            + TypeData::idColumnDB()
-            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + TypeData::nameColumnDB()
-            + " STRING NOT NULL,"
-            + TypeData::descriptionColumnDB()
+            + DataCashAccType::tableName() + " ("
+            + DataCashAccType::id()
+            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL CHECK("
+            + DataCashAccType::id() + " > 0),"
+            + DataCashAccType::name()
+            + " STRING NOT NULL CHECK ("
+            + DataCashAccType::name() + " != ''),"
+            + DataCashAccType::description()
             + " STRING,"
-            + TypeData::isIncludeDebtColumnDB()
-            + " BOOLEAN NOT NULL DEFAULT (0),"
-            + TypeData::isIncludeRefundColumnDB()
-            + " BOOLEAN NOT NULL DEFAULT (0),"
-            + TypeData::isIncludePurposeColumnDB()
-            + " BOOLEAN NOT NULL DEFAULT (0));";
+            + DataCashAccType::isIncludeDebt()
+            + " BOOLEAN NOT NULL CHECK ("
+            + DataCashAccType::isIncludeDebt() + " != '') DEFAULT (0),"
+            + DataCashAccType::isIncludeRefund()
+            + " BOOLEAN NOT NULL CHECK ("
+            + DataCashAccType::isIncludeRefund() + " != '') DEFAULT (0),"
+            + DataCashAccType::isIncludePurpose()
+            + " BOOLEAN NOT NULL CHECK ("
+            + DataCashAccType::isIncludePurpose() + " != '') DEFAULT (0));";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
-        throw ExceptionDB("CashAccoutCategory::CreateTable() : query error");
+        throw ExceptionDB("CashAccoutType::CreateTable() : query error");
     }
-    qDebug() << TypeData::tableDB() + " is created";
+    qDebug() << DataCashAccType::tableName() + " is created";
 }
 
-void CashAccoutType::Add(const Type &model)
+void CashAccoutType::Add(const MBase &model)
 {
-    QString text = "INSERT OR IGNORE INTO "
-            + TypeData::tableDB() + " ("
-            + TypeData::idColumnDB() + ", "
-            + TypeData::nameColumnDB() + ", "
-            + TypeData::descriptionColumnDB() + ", "
-            + TypeData::isIncludeDebtColumnDB() + ", "
-            + TypeData::isIncludeRefundColumnDB() + ", "
-            + TypeData::isIncludePurposeColumnDB()
+    QString text = "INSERT INTO "
+            + DataCashAccType::tableName() + " ("
+            + DataCashAccType::id() + ", "
+            + DataCashAccType::name() + ", "
+            + DataCashAccType::description() + ", "
+            + DataCashAccType::isIncludeDebt() + ", "
+            + DataCashAccType::isIncludeRefund() + ", "
+            + DataCashAccType::isIncludePurpose()
             + " ) VALUES ('"
             + S_NUM(model.id) + "','"
-            + model.name + "','"
-            + model.description + "','"
-            + S_NUM(model.settings.isIncludeDebt) + "','"
-            + S_NUM(model.settings.isIncludeRefund) + "','"
-            + S_NUM(model.settings.isIncludePurpose) + "');";
+            + static_cast<const MCashAccType&>(
+                model).name + "','"
+            + static_cast<const MCashAccType&>(
+                model).description + "','"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludeDebt) + "','"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludeRefund) + "','"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludePurpose) + "');";
 
     auto [query, result] = MakeQuery(text);
 
             if(!result) {
-        throw ExceptionDB("CashAccoutCategory::Add : query error");
+        throw ExceptionDB("CashAccoutType::Add : query error");
     }
 }
 
-Type CashAccoutType::Get(uint id)
+void CashAccoutType::Edit(const MBase &model)
+{
+    QString text = "UPDATE "
+            + DataCashAccType::tableName()
+            + " SET "
+            + DataCashAccType::name() + " = '"
+            + static_cast<const MCashAccType&>(
+                model).name + "',"
+            + DataCashAccType::description() + " = '"
+            + static_cast<const MCashAccType&>(
+                model).description + "',"
+            + DataCashAccType::isIncludeDebt() + " = '"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludeDebt) + "',"
+            + DataCashAccType::isIncludeRefund() + " = '"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludeRefund) + "',"
+            + DataCashAccType::isIncludePurpose() + " = '"
+            + S_NUM(static_cast<const MCashAccType&>(
+                        model).settings.isIncludePurpose) + "' "
+            + " WHERE "
+            + DataCashAccType::id() + " = '" + S_NUM(model.id) + "';";
+
+    auto [query, result] = MakeQuery(text);
+
+            if (!result) {
+        throw ExceptionDB("CashAccount::Edit : query error");
+    }
+}
+
+Ref<MBase> CashAccoutType::Get(uint id)
 {
     QString text = "SELECT "
-            + TypeData::idColumnDB() + ", "
-            + TypeData::nameColumnDB() + ", "
-            + TypeData::descriptionColumnDB() + ", "
-            + TypeData::isIncludeDebtColumnDB() + ", "
-            + TypeData::isIncludeRefundColumnDB() + ", "
-            + TypeData::isIncludePurposeColumnDB() + " "
+            + DataCashAccType::id() + ", "
+            + DataCashAccType::name() + ", "
+            + DataCashAccType::description() + ", "
+            + DataCashAccType::isIncludeDebt() + ", "
+            + DataCashAccType::isIncludeRefund() + ", "
+            + DataCashAccType::isIncludePurpose() + " "
             + " FROM "
-            + TypeData::tableDB()
+            + DataCashAccType::tableName()
             + " WHERE "
-            + TypeData::idColumnDB() + " = '"
+            + DataCashAccType::id() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
-        throw ExceptionDB("CashAccoutCategory::Get : query error");
+        throw ExceptionDB("CashAccoutType::Get : query error");
     }
 
-    Type output;
+    auto output = CreateRef<MCashAccType>();
     if (query->next()) {
-        output = getModelFromQuery(query.get());
+        *output = getModelFromQuery(query.get());
     }
 
     return output;
 }
 
-Types CashAccoutType::GetAll()
+void CashAccoutType::Remove(uint id)
+{
+    QBase::removeRow(id, DataCashAccType::tableName(), DataCashAccType::id());
+}
+
+QVariantList CashAccoutType::GetAll()
 {
     QString text = "SELECT "
-            + TypeData::idColumnDB() + ", "
-            + TypeData::nameColumnDB() + ", "
-            + TypeData::descriptionColumnDB() + ", "
-            + TypeData::isIncludeDebtColumnDB() + ", "
-            + TypeData::isIncludeRefundColumnDB() + ", "
-            + TypeData::isIncludePurposeColumnDB() + " "
+            + DataCashAccType::id() + ", "
+            + DataCashAccType::name() + ", "
+            + DataCashAccType::description() + ", "
+            + DataCashAccType::isIncludeDebt() + ", "
+            + DataCashAccType::isIncludeRefund() + ", "
+            + DataCashAccType::isIncludePurpose() + " "
             + " FROM "
-            + TypeData::tableDB() + ";";
+            + DataCashAccType::tableName() + ";";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
-        throw ExceptionDB("CashAccoutCategory::GetAll : query error");
+        throw ExceptionDB("CashAccoutType::GetAll : query error");
     }
 
-    Types output;
+    QVariantList output;
     while (query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
+        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
     }
 
     return output;
 }
 
-Type CashAccoutType::getModelFromQuery(QSqlQuery *query)
+MCashAccType CashAccoutType::getModelFromQuery(QSqlQuery *query)
 {
-    Type category;
+    MCashAccType category;
 
     category.id = query->value(0).toUInt();
     category.name = query->value(1).toString();
@@ -133,81 +178,99 @@ CashAccount::CashAccount(QSqlDatabase &database, QObject *parent)
 void CashAccount::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + CashAccData::tableDB() + " ("
-            + CashAccData::idColumnDB()
-            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + CashAccData::nameColumnDB()
-            + " STRING NOT NULL,"
-            + CashAccData::descriptionColumnDB()
+            + DataCashAcc::tableName() + " ("
+            + DataCashAcc::id()
+            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL CHECK("
+            + DataCashAcc::id() + " > 0),"
+            + DataCashAcc::name()
+            + " STRING NOT NULL CHECK("
+            + DataCashAcc::name() + " != ''),"
+            + DataCashAcc::description()
             + " STRING DEFAULT(''),"
-            + CashAccData::idIconColumnDB()
+            + DataCashAcc::idIcon()
             + "  INTEGER REFERENCES "
-            + TypeData::tableDB() + " ("
-            + TypeData::idColumnDB()
-            + ") NOT NULL,"
-            + CashAccData::colorColumnDB()
+            + DataCashAccType::tableName() + " ("
+            + DataCashAccType::id()
+            + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
+            + DataCashAcc::idIcon() + " > 0) DEFAULT(1),"
+            + DataCashAcc::color()
             + " STRING DEFAULT ('#000000'),"
-            + CashAccData::idCurrencyColumnDB()
+            + DataCashAcc::idCurrency()
             + " INTEGER REFERENCES "
-            + Data::Currency::tableDB() + " ("
-            + Data::Currency::idColumnDB()
-            + ") NOT NULL,"
-            + CashAccData::balanceColumnDB()
+            + Data::Currency::tableName() + " ("
+            + Data::Currency::id()
+            + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
+            + DataCashAcc::idCurrency() + " > 0) DEFAULT(1),"
+            + DataCashAcc::balance()
             + " DECIMAL NOT NULL,"
-            + CashAccData::refundColumnDB()
+            + DataCashAcc::refund()
             + " DECIMAL DEFAULT (0),"
-            + CashAccData::debtColumnDB()
+            + DataCashAcc::debt()
             + " DECIMAL DEFAULT (0),"
-            + CashAccData::purposeColumnDB()
+            + DataCashAcc::purpose()
             + " DECIMAL DEFAULT (0),"
-            + CashAccData::displayInExpensesColumnDB()
+            + DataCashAcc::displayInExpenses()
             + " BOOLEAN NOT NULL DEFAULT (0),"
-            + CashAccData::displayInOverallBalanceColumnDB()
+            + DataCashAcc::displayInOverallBalance()
             + " BOOLEAN NOT NULL DEFAULT (0),"
-            + CashAccData::idCashAccountCategoryColumnDB()
+            + DataCashAcc::idCashAccountType()
             + " INTEGER REFERENCES "
-            + TypeData::tableDB() + " ("
-            + TypeData::idColumnDB()
-            + ") NOT NULL);";
+            + DataCashAccType::tableName() + " ("
+            + DataCashAccType::id()
+            + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
+            + DataCashAcc::idCashAccountType() + " > 0) DEFAULT(1));";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
         throw ExceptionDB("CashAccount::CreateTable() : query error");
     }
-    qDebug() << CashAccData::tableDB() + " is created";
+    qDebug() << DataCashAcc::tableName() + " is created";
 }
 
-void CashAccount::Add(const CashAcc &model)
+void CashAccount::Add(const MBase &model)
 {
-    QString text = "INSERT OR IGNORE INTO "
-            + CashAccData::tableDB() + " ("
-            + CashAccData::idColumnDB() + ", "
-            + CashAccData::nameColumnDB() + ", "
-            + CashAccData::descriptionColumnDB() + ", "
-            + CashAccData::idIconColumnDB() + ", "
-            + CashAccData::colorColumnDB() + ", "
-            + CashAccData::idCurrencyColumnDB() + ", "
-            + CashAccData::balanceColumnDB() + ", "
-            + CashAccData::refundColumnDB() + ", "
-            + CashAccData::debtColumnDB() + ", "
-            + CashAccData::purposeColumnDB() + ", "
-            + CashAccData::displayInExpensesColumnDB() + ", "
-            + CashAccData::displayInOverallBalanceColumnDB() + ", "
-            + CashAccData::idCashAccountCategoryColumnDB()
+    //    QString text = "INSERT OR IGNORE INTO "
+    QString text = "INSERT INTO "
+            + DataCashAcc::tableName() + " ("
+            + DataCashAcc::id() + ", "
+            + DataCashAcc::name() + ", "
+            + DataCashAcc::description() + ", "
+            + DataCashAcc::idIcon() + ", "
+            + DataCashAcc::color() + ", "
+            + DataCashAcc::idCurrency() + ", "
+            + DataCashAcc::balance() + ", "
+            + DataCashAcc::refund() + ", "
+            + DataCashAcc::debt() + ", "
+            + DataCashAcc::purpose() + ", "
+            + DataCashAcc::displayInExpenses() + ", "
+            + DataCashAcc::displayInOverallBalance() + ", "
+            + DataCashAcc::idCashAccountType()
             + ") VALUES ('"
             + S_NUM(model.id) + "','"
-            + model.name + "','"
-            + model.description + "','"
-            + S_NUM(model.icon.id) + "','"
-            + model.color.hex() + "','"
-            + S_NUM(model.currency.id) + "','"
-            + S_NUM(model.balance.getAsDouble()) + "','"
-            + S_NUM(model.refund.getAsDouble()) + "','"
-            + S_NUM(model.debt.getAsDouble()) + "','"
-            + S_NUM(model.purpose.getAsDouble()) + "','"
-            + S_NUM(model.settings.displayInExpenses) + "','"
-            + S_NUM(model.settings.displayInOverallBalance) + "','"
-            + S_NUM(model.category.id) + "');";
+            + static_cast<const MCashAcc&>(
+                model).name + "','"
+            + static_cast<const MCashAcc&>(
+                model).description + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).icon.id) + "','"
+            + static_cast<const MCashAcc&>(
+                model).color.hex() + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).currency.id) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).balance.getAsDouble()) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).refund.getAsDouble()) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).debt.getAsDouble()) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).purpose.getAsDouble()) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).settings.displayInExpenses) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).settings.displayInOverallBalance) + "','"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).type.id) + "');";
 
     auto [query, result] = MakeQuery(text);
 
@@ -216,25 +279,49 @@ void CashAccount::Add(const CashAcc &model)
     }
 }
 
-void CashAccount::Edit(const CashAcc &model)
+void CashAccount::Edit(const MBase &model)
 {
     QString text = "UPDATE "
-            + CashAccData::tableDB()
+            + DataCashAcc::tableName()
             + " SET "
-            + CashAccData::nameColumnDB() + " = '" + model.name + "',"
-            + CashAccData::descriptionColumnDB() + " = '" + model.description + "',"
-            + CashAccData::idIconColumnDB() + " = '" + S_NUM(model.icon.id) + "',"
-            + CashAccData::colorColumnDB() + " = '" + model.color.hex() + "',"
-            + CashAccData::idCurrencyColumnDB() + " = '" + S_NUM(model.currency.id) + "',"
-            + CashAccData::balanceColumnDB() + " = '" + S_NUM(model.balance.getAsDouble()) + "',"
-            + CashAccData::refundColumnDB() + " = '" + S_NUM(model.refund.getAsDouble()) + "',"
-            + CashAccData::debtColumnDB() + " = '" + S_NUM(model.debt.getAsDouble()) + "',"
-            + CashAccData::purposeColumnDB() + " = '" + S_NUM(model.purpose.getAsDouble()) + "',"
-            + CashAccData::displayInExpensesColumnDB() + " = '" + S_NUM(model.settings.displayInExpenses) + "',"
-            + CashAccData::displayInOverallBalanceColumnDB() + " = '" + S_NUM(model.settings.displayInOverallBalance) + "',"
-            + CashAccData::idCashAccountCategoryColumnDB() + " = '" + S_NUM(model.category.id) + "' "
+            + DataCashAcc::name() + " = '"
+            + static_cast<const MCashAcc&>(
+                model).name + "',"
+            + DataCashAcc::description() + " = '"
+            + static_cast<const MCashAcc&>(
+                model).description + "',"
+            + DataCashAcc::idIcon() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).icon.id) + "',"
+            + DataCashAcc::color() + " = '"
+            + static_cast<const MCashAcc&>(
+                model).color.hex() + "',"
+            + DataCashAcc::idCurrency() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).currency.id) + "',"
+            + DataCashAcc::balance() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).balance.getAsDouble()) + "',"
+            + DataCashAcc::refund() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).refund.getAsDouble()) + "',"
+            + DataCashAcc::debt() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).debt.getAsDouble()) + "',"
+            + DataCashAcc::purpose() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).purpose.getAsDouble()) + "',"
+            + DataCashAcc::displayInExpenses()
+            + " = '" + S_NUM(static_cast<const MCashAcc&>(
+                                 model).settings.displayInExpenses) + "',"
+            + DataCashAcc::displayInOverallBalance() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).settings.displayInOverallBalance) + "',"
+            + DataCashAcc::idCashAccountType() + " = '"
+            + S_NUM(static_cast<const MCashAcc&>(
+                        model).type.id) + "' "
             + " WHERE "
-            + CashAccData::idColumnDB() + " = '" + S_NUM(model.id) + "';";
+            + DataCashAcc::id() + " = '" + S_NUM(model.id) + "';";
 
     auto [query, result] = MakeQuery(text);
 
@@ -244,26 +331,26 @@ void CashAccount::Edit(const CashAcc &model)
 
 }
 
-CashAcc CashAccount::Get(uint id)
+Ref<MBase> CashAccount::Get(uint id)
 {
     QString text = "SELECT "
-            + CashAccData::idColumnDB() + ","
-            + CashAccData::nameColumnDB() + ","
-            + CashAccData::descriptionColumnDB() + ", "
-            + CashAccData::idIconColumnDB() + ","
-            + CashAccData::colorColumnDB() + ","
-            + CashAccData::idCurrencyColumnDB() + ","
-            + CashAccData::balanceColumnDB() + ","
-            + CashAccData::refundColumnDB() + ","
-            + CashAccData::debtColumnDB() + ","
-            + CashAccData::purposeColumnDB() + ","
-            + CashAccData::displayInExpensesColumnDB() + ","
-            + CashAccData::displayInOverallBalanceColumnDB() + ","
-            + CashAccData::idCashAccountCategoryColumnDB() +
+            + DataCashAcc::id() + ","
+            + DataCashAcc::name() + ","
+            + DataCashAcc::description() + ", "
+            + DataCashAcc::idIcon() + ","
+            + DataCashAcc::color() + ","
+            + DataCashAcc::idCurrency() + ","
+            + DataCashAcc::balance() + ","
+            + DataCashAcc::refund() + ","
+            + DataCashAcc::debt() + ","
+            + DataCashAcc::purpose() + ","
+            + DataCashAcc::displayInExpenses() + ","
+            + DataCashAcc::displayInOverallBalance() + ","
+            + DataCashAcc::idCashAccountType() +
             + " FROM "
-            + CashAccData::tableDB()
+            + DataCashAcc::tableName()
             + " WHERE "
-            + CashAccData::idColumnDB() + " = '"
+            + DataCashAcc::id() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
@@ -272,32 +359,37 @@ CashAcc CashAccount::Get(uint id)
         throw ExceptionDB("CashAccount::Get : query error");
     }
 
-    CashAcc output;
+    auto output = CreateRef<MCashAcc>();
     if(query->next()) {
-        output = getModelFromQuery(query.get());
+        *output = getModelFromQuery(query.get());
     }
     return output;
 
 }
 
-CashAccs CashAccount::GetAll()
+void CashAccount::Remove(uint id)
+{
+    QBase::removeRow(id, DataCashAcc::tableName(), DataCashAcc::id());
+}
+
+QVariantList CashAccount::GetAll()
 {
     QString text = "SELECT "
-            + CashAccData::idColumnDB() + ","
-            + CashAccData::nameColumnDB() + ","
-            + CashAccData::descriptionColumnDB() + ", "
-            + CashAccData::idIconColumnDB() + ","
-            + CashAccData::colorColumnDB() + ","
-            + CashAccData::idCurrencyColumnDB() + ","
-            + CashAccData::balanceColumnDB() + ","
-            + CashAccData::refundColumnDB() + ","
-            + CashAccData::debtColumnDB() + ","
-            + CashAccData::purposeColumnDB() + ","
-            + CashAccData::displayInExpensesColumnDB() + ","
-            + CashAccData::displayInOverallBalanceColumnDB() + ","
-            + CashAccData::idCashAccountCategoryColumnDB() +
+            + DataCashAcc::id() + ","
+            + DataCashAcc::name() + ","
+            + DataCashAcc::description() + ", "
+            + DataCashAcc::idIcon() + ","
+            + DataCashAcc::color() + ","
+            + DataCashAcc::idCurrency() + ","
+            + DataCashAcc::balance() + ","
+            + DataCashAcc::refund() + ","
+            + DataCashAcc::debt() + ","
+            + DataCashAcc::purpose() + ","
+            + DataCashAcc::displayInExpenses() + ","
+            + DataCashAcc::displayInOverallBalance() + ","
+            + DataCashAcc::idCashAccountType() +
             + " FROM "
-            + CashAccData::tableDB() + ";";
+            + DataCashAcc::tableName() + ";";
 
     auto [query, result] = MakeQuery(text);
 
@@ -305,33 +397,16 @@ CashAccs CashAccount::GetAll()
         throw ExceptionDB("CashAccount::Get All: query error");
     }
 
-    CashAccs output;
+    QVariantList output;
     while(query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
+        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
     }
     return output;
 }
 
-void CashAccount::Remove(uint id)
+MCashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
 {
-    QString text = "DELETE FROM "
-            + CashAccData::tableDB()
-            + " WHERE "
-            + CashAccData::idColumnDB()
-            + " = '"
-            + S_NUM(id)
-            + "';";
-
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Remove: query error");
-    }
-}
-
-CashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
-{
-    CashAcc cashAcc;
+    MCashAcc cashAcc;
 
     cashAcc.id = query->value(0).toUInt();
     cashAcc.name = query->value(1).toString();
@@ -345,7 +420,7 @@ CashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
     cashAcc.purpose.setAsDouble(query->value(9).toDouble());
     cashAcc.settings.displayInExpenses = query->value(10).toBool();
     cashAcc.settings.displayInOverallBalance = query->value(11).toBool();
-    cashAcc.category.id = query->value(12).toUInt();
+    cashAcc.type.id = query->value(12).toUInt();
 
     return cashAcc;
 }

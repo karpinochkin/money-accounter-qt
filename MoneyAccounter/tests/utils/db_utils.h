@@ -12,6 +12,13 @@ bool openDB() {
     return db.open();
 }
 
+bool pragmaON() {
+    QSqlQuery *query = new QSqlQuery(db);
+    bool result = query->exec("PRAGMA foreign_keys = ON;");
+    delete query;
+    return result;
+}
+
 void closeDB() {
     db.close();
 }

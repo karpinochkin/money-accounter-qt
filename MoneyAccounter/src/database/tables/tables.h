@@ -5,174 +5,205 @@
 
 namespace DB::Tables::Data {
 
-struct CurrencySymbol {
-static inline QString tableDB() {
-    return "tbl_currency_symbol";
-}
-
-static inline QString idColumnDB() {
-    return "id";
-}
-
-static inline QString symbolColumnDB() {
-    return "symbol";
-}
-
-static inline QString idCorrencyColumnDB() {
-    return "id_currency";
-}
-};
-
 struct Currency {
 
-static inline QString tableDB() {
+static inline QString tableName() {
     return "tbl_currency";
 }
 
-static inline QString idColumnDB() {
+static inline QString id() {
     return "id";
 }
 
-static inline QString nameColumnDB() {
+static inline QString name() {
     return "name";
+}
+
+static inline QString symbol() {
+    return "active_symbol";
 }
 };
 
 struct Icon {
-    static inline QString tableDB() {
+    static inline QString tableName() {
         return "tbl_icons";
     }
 
-    static inline QString idColumnDB() {
+    static inline QString id() {
         return "id";
     }
 
-    static inline QString pathColumnDB() {
+    static inline QString path() {
         return "path";
     }
 };
 
 struct CashAccountType {
-    static inline QString tableDB() {
+    static inline QString tableName() {
         return "tbl_cash_acc_categories";
     }
 
-    static inline QString idColumnDB() {
+    static inline QString id() {
         return "id";
     }
 
-    static inline QString nameColumnDB() {
+    static inline QString name() {
         return "name";
     }
 
-    static inline QString descriptionColumnDB() {
+    static inline QString description() {
         return "description";
     }
 
-    static inline QString isIncludeRefundColumnDB() {
+    static inline QString isIncludeRefund() {
         return "is_include_refund";
     }
 
-    static inline QString isIncludeDebtColumnDB() {
+    static inline QString isIncludeDebt() {
         return "is_include_debt";
     }
 
-    static inline QString isIncludePurposeColumnDB() {
+    static inline QString isIncludePurpose() {
         return "is_include_purpose";
     }
 };
 
 struct CashAccount {
-    static inline QString tableDB() {
+    static inline QString tableName() {
         return "tbl_cash_accounts";
     }
 
-    static inline QString idColumnDB() {
+    static inline QString id() {
         return "id";
     }
 
-    static inline QString nameColumnDB() {
+    static inline QString name() {
         return "name";
     }
 
-    static inline QString descriptionColumnDB() {
+    static inline QString description() {
         return "description";
     }
 
-    static inline QString idIconColumnDB() {
+    static inline QString idIcon() {
         return "id_icon";
     }
 
-    static inline QString colorColumnDB() {
+    static inline QString color() {
         return "color";
     }
 
-    static inline QString idCurrencyColumnDB() {
+    static inline QString idCurrency() {
         return "id_currency";
     }
 
-    static inline QString displayInOverallBalanceColumnDB() {
+    static inline QString displayInOverallBalance() {
         return "display_in_overall_balance";
     }
 
-    static inline QString displayInExpensesColumnDB() {
+    static inline QString displayInExpenses() {
         return "display_in_expenses";
     }
 
-    static inline QString refundColumnDB() {
+    static inline QString refund() {
         return "refund";
     }
 
-    static inline QString debtColumnDB() {
+    static inline QString debt() {
         return "debt";
     }
 
-    static inline QString balanceColumnDB() {
+    static inline QString balance() {
         return "balance";
     }
 
-    static inline QString purposeColumnDB() {
+    static inline QString purpose() {
         return "purpose";
     }
 
-    static inline QString idCashAccountCategoryColumnDB() {
+    static inline QString idCashAccountType() {
         return "id_cash_acc_category";
     }
 };
 
 struct Category {
-    static inline QString tableDB() {
+    static inline QString tableName() {
         return "tbl_category";
     }
 
-    static inline QString idColumnDB() {
+    static inline QString id() {
         return "id";
     }
 
-    static inline QString nameColumnDB() {
+    static inline QString name() {
         return "name";
     }
 
-    static inline QString descriptionColumnDB() {
+    static inline QString description() {
         return "description";
     }
 
-    static inline QString idCurrencyColumnDB() {
+    static inline QString idCurrency() {
         return "id_currency";
     }
 
-    static inline QString idIconColumnDB() {
+    static inline QString idIcon() {
         return "id_icon";
     }
 
-    static inline QString colorColumnDB() {
+    static inline QString color() {
         return "color";
     }
 
-    static inline QString isActiveColumnDB() {
+    static inline QString isActive() {
         return "is_active";
     }
 };
+
+struct Transaction {
+    static inline QString tableName() {
+        return "tbl_transaction";
+    }
+
+    static inline QString id() {
+        return "id";
+    }
+
+    static inline QString name() {
+        return "name";
+    }
+
+    static inline QString descrpiption() {
+        return "description";
+    }
+
+    static inline QString idCashAccount() {
+        return "id_cash_account";
+    }
+
+    static inline QString idCategory() {
+        return "id_category";
+    }
+
+    static inline QString datetime() {
+        return "datetime";
+    }
+
+    static inline QString sum() {
+        return "amount";
+    }
+};
+
+}
+
+namespace DB::Tables {
+
+using DataCashAccType = Data::CashAccountType;
+using DataCashAcc = Data::CashAccount;
+using DataCategory = Tables::Data::Category;
+using DataCurrency = Data::Currency;
+using DataIcon = Data::Icon;
+using DataTransact = Data::Transaction;
 
 }
 

@@ -17,13 +17,11 @@ struct Category : public Base {
     bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || !currency.isCorrect() || !icon.isCorrect());
     }
-
-    bool isCorrectDB() const override {
-        return !(id < 1 || name.isEmpty() || currency.id < 1 || icon.id < 1);
-    }
-
 };
 
 }
+
+using MCategory = Models::Category;
+using MCategories = QList<Models::Category>;
 
 #endif // CATEGORY_H

@@ -5,6 +5,7 @@
 #include "../src/database/tables/icontable.h"
 #include "../src/database/tables/cashaccouttable.h"
 #include "../src/database/tables/categorytable.h"
+#include "../src/database/tables/transactiontable.h"
 #include "../utils/db_utils.h"
 
 #endif // TABLES_UTILS_H

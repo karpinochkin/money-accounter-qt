@@ -34,7 +34,7 @@ private:
 
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
-    Symbols getSymbols(const KIDRow &row, uint currencyID, uint &symID);
+//    Symbols getSymbols(const KIDRow &row, uint currencyID, uint &symID);
 };
 
 class QIconFiller : public QFillerBase {
@@ -81,6 +81,7 @@ private:
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };
+
 }
 
 #endif // DBDEFAULTFILLERS_H

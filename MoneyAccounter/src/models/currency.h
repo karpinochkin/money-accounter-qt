@@ -5,34 +5,19 @@
 
 namespace Models {
 
-class CurrencySymbol : public Base {
-public:
-    QString symbol;
-    uint idCurrency;
-
-    bool isCorrect() const override {
-        return !(id < 1 || symbol.isEmpty() || idCurrency < 1);
-    }
-
-    bool isCorrectDB() const override {
-        return isCorrect();
-    }
-};
-
 class Currency : public Base {
 public:
     QString name;
-    QList <CurrencySymbol> symbols;
+    QString symbol;
 
     bool isCorrect() const override {
-        return !(id < 1 || name.isEmpty() || std::empty(symbols));
-    }
-
-    bool isCorrectDB() const override {
-        return isCorrect();
+        return !(id < 1 || name.isEmpty() || symbol.isEmpty());
     }
 };
 
 }
+
+using MCurrency = Models::Currency;
+using MCurrencies = QList<Models::Currency>;
 
 #endif // CURRENCY_H

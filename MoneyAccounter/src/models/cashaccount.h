@@ -25,10 +25,6 @@ public:
     bool isCorrect() const override {
         return !(id < 1 || name.isEmpty());
     }
-
-    bool isCorrectDB() const override {
-        return isCorrect();
-    }
 };
 
 struct CashAccountSettings {
@@ -48,19 +44,19 @@ public:
     Decimal debt{};
     Decimal purpose {};
     CashAccountSettings settings {};
-    CashAccountType category{};
+    CashAccountType type{};
 
     bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || !icon.isCorrect()
-                 || !currency.isCorrect() || !category.isCorrect());
-    }
-
-    bool isCorrectDB() const override {
-        return !(id < 1 || name.isEmpty() || icon.id < 1
-                 || currency.id < 1 || category.id < 1);
+                 || !currency.isCorrect() || !type.isCorrect());
     }
 };
 
 }
+
+using MCashAcc = Models::CashAccount;
+using MCashAccs = QList<Models::CashAccount>;
+using MCashAccType = Models::CashAccountType;
+using MCashAccTypes = QList<Models::CashAccountType>;
 
 #endif // CASHACCOUNT_H

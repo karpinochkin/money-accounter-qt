@@ -2,134 +2,6 @@
 
 namespace DB::Tables {
 
-QCurrencySymbol::QCurrencySymbol(QSqlDatabase &database, QObject *parent)
-    : QBase(database, parent)
-{
-
-}
-
-void QCurrencySymbol::CreateTable()
-{
-    QString text = "CREATE TABLE IF NOT EXISTS "
-            + SymData::tableDB() + " ("
-            + SymData::idColumnDB()
-            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + SymData::symbolColumnDB()
-            + " STRING NOT NULL,"
-            + SymData::idCorrencyColumnDB()
-            + " INTEGER REFERENCES "
-            + Data::Currency::tableDB() + " ("
-            + Data::Currency::idColumnDB()
-            + ") NOT NULL);";
-
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("QCurrencySymbol::CreateTable() : query error");
-    }
-    qDebug() << SymData::tableDB() + " is created";
-}
-
-void QCurrencySymbol::Add(const Sym &model)
-{
-    QString text = "INSERT OR IGNORE INTO "
-            + SymData::tableDB() + " ("
-            + SymData::idColumnDB() + ", "
-            + SymData::symbolColumnDB() + ", "
-            + SymData::idCorrencyColumnDB() + " "
-            +") VALUES ('"
-            + S_NUM(model.id) + "','"
-            + model.symbol + "','"
-            + S_NUM(model.idCurrency) + "');";
-
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("QCurrencySymbol::Add : query error");
-    }
-}
-
-Sym QCurrencySymbol::Get(uint id)
-{
-    QString text = "SELECT "
-            + SymData::idColumnDB() + ", "
-            + SymData::symbolColumnDB() + ", "
-            + SymData::idCorrencyColumnDB() + " "
-            + " FROM "
-            + SymData::tableDB()
-            + " WHERE "
-            + SymData::idColumnDB() + " = '"
-            + S_NUM(id)
-            + "';";
-
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("QCurrencySymbol::Get : query error");
-    }
-
-    Sym output;
-    if(query->next()) {
-        output = getModelFromQuery(query.get());
-    }
-    return output;
-}
-
-Symbols QCurrencySymbol::GetByCurrencyID(uint id)
-{
-    QString text = "SELECT "
-            + SymData::idColumnDB() + ", "
-            + SymData::symbolColumnDB() + ", "
-            + SymData::idCorrencyColumnDB() + " "
-            + " FROM "
-            + SymData::tableDB()
-            + " WHERE "
-            + SymData::idCorrencyColumnDB() + " = '"
-            + S_NUM(id)
-            + "';";
-
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("QCurrencySymbol::GetByCurrencyID : query error");
-    }
-
-    Symbols output;
-    while (query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
-    }
-
-    return output;
-}
-
-Symbols QCurrencySymbol::GetAll()
-{
-    QString text = "SELECT "
-            + SymData::idColumnDB() + ", "
-            + SymData::symbolColumnDB() + ", "
-            + SymData::idCorrencyColumnDB() + " "
-            + " FROM "
-            + SymData::tableDB() + ";";
-
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("QCurrencySymbol::GetAll() : query error");
-    }
-
-    Symbols output;
-    while (query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
-    }
-    return output;
-}
-
-Sym QCurrencySymbol::getModelFromQuery(QSqlQuery *query)
-{
-    Sym sym;
-    sym.id = query->value(0).toUInt();
-    sym.symbol = query->value(1).toString();
-    sym.idCurrency = query->value(2).toUInt();
-    return sym;
-}
-
 QCurrency::QCurrency(QSqlDatabase &database, QObject *parent)
     : QBase(database, parent)
 {
@@ -139,27 +11,40 @@ QCurrency::QCurrency(QSqlDatabase &database, QObject *parent)
 void QCurrency::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + Data::Currency::tableDB() + " ("
-            + Data::Currency::idColumnDB() + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + Data::Currency::nameColumnDB() + " STRING UNIQUE NOT NULL);";
+            + DataCurrency::tableName() + " ("
+            + DataCurrency::id()
+            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL CHECK("
+            + DataCurrency::id() + " > 0),"
+            + DataCurrency::name()
+            + " STRING UNIQUE NOT NULL CHECK("
+            + DataCurrency::name() + " != ''),"
+            + DataCurrency::symbol()
+            + " STRING UNIQUE NOT NULL CHECK("
+            + DataCurrency::symbol()
+            + " != ''));";
 
     auto [query, result] = MakeQuery(text);
 
             if (!result) {
         throw ExceptionDB("QCurrency::CreateTable() : query error");
     }
-    qDebug() << Data::Currency::tableDB() + " is created";
+    qDebug() << DataCurrency::tableName() + " is created";
 }
 
-void QCurrency::Add(const Currency &model)
+void QCurrency::Add(const MBase &model)
 {
-    QString text = "INSERT OR IGNORE INTO "
-            + Data::Currency::tableDB() + " ("
-            + Data::Currency::idColumnDB() + ", "
-            + Data::Currency::nameColumnDB() + " "
+    //    QString text = "INSERT OR IGNORE INTO "
+    QString text = "INSERT INTO "
+            + DataCurrency::tableName() + " ("
+            + DataCurrency::id() + ", "
+            + DataCurrency::name() + ", "
+            + DataCurrency::symbol() + " "
             + ") VALUES ('"
             + S_NUM(model.id) + "','"
-            + model.name + "');";
+            + static_cast<const MCurrency&>(
+                model).name + "','"
+            + static_cast<const MCurrency&>(
+                model).symbol + "');";
 
     auto [query, result] = MakeQuery(text);
 
@@ -168,15 +53,37 @@ void QCurrency::Add(const Currency &model)
     }
 }
 
-Currency QCurrency::Get(uint id)
+void QCurrency::Edit(const MBase &model)
+{
+    QString text = "UPDATE "
+            + DataCurrency::tableName()
+            + " SET "
+            + DataCurrency::name() + " = '"
+            + static_cast<const Models::Currency&>(
+                model).name + "',"
+            + DataCurrency::symbol() + " = '"
+            + static_cast<const Models::Currency&>(
+                model).symbol + "' "
+            + " WHERE "
+            + DataCurrency::id() + " = '"
+            + S_NUM(model.id) + "';";
+    auto [query, result] = MakeQuery(text);
+
+            if (!result) {
+        throw ExceptionDB("Category::Edit : query error");
+    }
+}
+
+Ref<MBase> QCurrency::Get(uint id)
 {
     QString text = "SELECT "
-            + Data::Currency::idColumnDB() + ", "
-            + Data::Currency::nameColumnDB() + " "
+            + DataCurrency::id() + ", "
+            + DataCurrency::name() + ", "
+            + DataCurrency::symbol() + " "
             + " FROM "
-            + Data::Currency::tableDB()
+            + DataCurrency::tableName()
             + " WHERE "
-            + Data::Currency::idColumnDB() + " = '"
+            + DataCurrency::id() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
@@ -184,21 +91,27 @@ Currency QCurrency::Get(uint id)
         throw ExceptionDB("QCurrency::Get : query error");
     }
 
-    Currency output;
+    auto output = CreateRef<MCurrency>();
     if(query->next()) {
-        output = getModelFromQuery(query.get());
+        *output = getModelFromQuery(query.get());
     }
 
     return output;
 }
 
-Currencies QCurrency::GetAll()
+void QCurrency::Remove(uint id)
+{
+    QBase::removeRow(id, DataCurrency::tableName(), DataCurrency::id());
+}
+
+QVariantList QCurrency::GetAll()
 {
     QString text = "SELECT "
-            + Data::Currency::idColumnDB() + ", "
-            + Data::Currency::nameColumnDB() + " "
+            + DataCurrency::id() + ", "
+            + DataCurrency::name() + ", "
+            + DataCurrency::symbol() + " "
             + " FROM "
-            + Data::Currency::tableDB() + ";";
+            + DataCurrency::tableName() + ";";
 
     auto [query, result] = MakeQuery(text);;
 
@@ -206,20 +119,21 @@ Currencies QCurrency::GetAll()
         throw ExceptionDB("QCurrency::GetAll() : query error");
     }
 
-    Currencies output;
+    QVariantList output;
     while (query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
+        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
     }
 
     return output;
 }
 
-Currency QCurrency::getModelFromQuery(QSqlQuery *query)
+MCurrency QCurrency::getModelFromQuery(QSqlQuery *query)
 {
-    Models::Currency currency{};
+    MCurrency currency{};
     currency.id = query->value(0).toUInt();
     currency.name = query->value(1).toString();
-//    currency.symbols = Symbols {};
+    currency.symbol = query->value(2).toString();
+
     return currency;
 }
 

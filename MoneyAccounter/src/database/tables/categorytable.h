@@ -9,22 +9,23 @@ namespace DB::Tables {
 
 class Category : public QBase
 {
-    using CategData = Tables::Data::Category;
-
 public:
     explicit Category(QSqlDatabase &database, QObject *parent = nullptr);
     ~Category() = default;
 
     void CreateTable() override;
-    void Add(const Models::Category& model);
-    void Edit(const Models::Category& model);
-    Models::Category Get(uint id);
-    QList<Models::Category> GetAll();
-    void Remove(uint id);
+    void Add(const MBase& model) override;
+    void Edit(const MBase &model) override;
+    void Remove(uint id) override;
+    Ref<MBase> Get(uint id) override;
+    QVariantList GetAll() override;
 
 private:
-    inline Models::Category getModelFromQuery(QSqlQuery *query);
+    MCategory getModelFromQuery(QSqlQuery *query);
 };
 }
+
+Q_DECLARE_METATYPE(MCategory);
+
 
 #endif // CATEGORYTABLE_H

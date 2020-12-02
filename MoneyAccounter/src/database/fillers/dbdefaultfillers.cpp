@@ -21,31 +21,14 @@ void QCurrencyFiller::setDefaultValuesIntoTables()
 
 void QCurrencyFiller::addIntoDB(const QList<KIDRow> &kid)
 {
-    uint symId = 1;
     for (auto row : kid) {
         Models::Currency currency;
         currency.id = row.objects.at(0)().toInt();
         currency.name = row.objects.at(1)();
-        currency.symbols = getSymbols(row, currency.id, symId);
+        currency.symbol = row.objects.at(2)();
 
        m_currency->Add(currency);
     }
-}
-
-Symbols QCurrencyFiller::getSymbols(const KIDRow &row, uint currencyID, uint &symID)
-{
-    Symbols output;
-
-    for (auto symbols : row.array_objects) {
-        for (auto sym : symbols) {
-            Sym _sym;
-            _sym.id = symID++;
-            _sym.symbol = sym();
-            _sym.idCurrency = currencyID;
-            output.push_back(_sym);
-        }
-    }
-    return output;
 }
 
 QIconFiller::QIconFiller(Ref<Controllers::QIcon> &icon)
@@ -91,7 +74,7 @@ void QCashAccountTypeFiller::setDefaultValuesIntoTables()
 void QCashAccountTypeFiller::addIntoDB(const QList<KIDRow> &kid)
 {
     for (auto row : kid) {
-        Type category;
+        Models::CashAccountType category;
         category.id = row.objects.at(0)().toUInt();
         category.name = row.objects.at(1)();
         category.description = row.objects.at(2)();
@@ -122,7 +105,7 @@ void QCashAccountFiller::setDefaultValuesIntoTables()
 void QCashAccountFiller::addIntoDB(const QList<KIDRow> &kid)
 {
     for (auto row : kid) {
-        CashAcc cashAcc;
+        Models::CashAccount cashAcc;
 
         cashAcc.id = row.objects.at(0)().toUInt();
         cashAcc.name = row.objects.at(1)();
@@ -130,7 +113,7 @@ void QCashAccountFiller::addIntoDB(const QList<KIDRow> &kid)
         cashAcc.icon.id = row.objects.at(3)().toUInt();
         cashAcc.currency.id = row.objects.at(4)().toUInt();
         cashAcc.balance.setAsDouble(row.objects.at(5)().toDouble());
-        cashAcc.category.id = row.objects.at(6)().toUInt();
+        cashAcc.type.id = row.objects.at(6)().toUInt();
 
         m_cashAcc->Add(cashAcc);
     }

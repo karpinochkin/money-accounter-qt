@@ -16,6 +16,7 @@ HEADERS += \
         ../src/database/tables/currencytable.h \
     ../src/database/tables/icontable.h \
         ../src/database/tables/tables.h \ \
+    ../src/database/tables/transactiontable.h \
     ../src/models/color.h \
     ../src/models/currency.h \
     ../src/utils/qparser.h \
@@ -34,5 +35,6 @@ SOURCES += \
         ../src/database/tables/categorytable.cpp \
         ../src/database/tables/currencytable.cpp \
         ../src/database/tables/icontable.cpp \
+        ../src/database/tables/transactiontable.cpp \
         ../src/utils/qparser.cpp \
         main.cpp

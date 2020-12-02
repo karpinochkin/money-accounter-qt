@@ -11,50 +11,55 @@ Category::Category(QSqlDatabase &database, QObject *parent)
 void Category::CreateTable()
 {
     QString text = "CREATE TABLE IF NOT EXISTS "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB()
-            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL,"
-            + CategData::nameColumnDB()
-            + " STRING NOT NULL,"
-            + CategData::descriptionColumnDB()
+            + DataCategory::tableName() + " ("
+            + DataCategory::id()
+            + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE NOT NULL CHECK("
+            + DataCategory::id() + " > 0),"
+            + DataCategory::name()
+            + " STRING NOT NULL CHECK("
+            + DataCategory::name() + " != ''),"
+            + DataCategory::description()
             + " STRING,"
-            + CategData::colorColumnDB()
+            + DataCategory::color()
             + " STRING DEFAULT ('#000000'),"
-            + CategData::idCurrencyColumnDB()
+            + DataCategory::idCurrency()
             + " INTEGER REFERENCES "
-            + Data::Currency::tableDB() + " ("
-            + Data::Currency::idColumnDB()
-            + ") NOT NULL,"
-            + CategData::idIconColumnDB()
+            + Data::Currency::tableName() + " ("
+            + Data::Currency::id()
+            + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
+            + DataCategory::idCurrency() + " > 0) DEFAULT(1),"
+            + DataCategory::idIcon()
             + " INTEGER REFERENCES "
-            + Data::Icon::tableDB() + " ("
-            + Data::Icon::idColumnDB()
-            + ") NOT NULL);";
+            + Data::Icon::tableName() + " ("
+            + Data::Icon::id()
+            + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
+            + DataCategory::idIcon() + " > 0) DEFAULT(1));";
 
     auto [query, result] = MakeQuery(text);
             if (!result) {
         throw ExceptionDB("Category::CreateTable() : query error");
     }
-    qDebug() << CategData::tableDB() + " is created";
+    qDebug() << DataCategory::tableName() + " is created";
 }
 
-void Category::Add(const Models::Category &model)
+void Category::Add(const MBase &model)
 {
-    QString text = "INSERT OR IGNORE INTO "
-            + CategData::tableDB() + " ("
-            + CategData::idColumnDB() + ","
-            + CategData::nameColumnDB() + ","
-            + CategData::descriptionColumnDB() + ","
-            + CategData::idCurrencyColumnDB() + ","
-            + CategData::idIconColumnDB() + ","
-            + CategData::colorColumnDB()
+//    QString text = "INSERT OR IGNORE INTO "
+    QString text = "INSERT INTO "
+            + DataCategory::tableName() + " ("
+            + DataCategory::id() + ","
+            + DataCategory::name() + ","
+            + DataCategory::description() + ","
+            + DataCategory::idCurrency() + ","
+            + DataCategory::idIcon() + ","
+            + DataCategory::color()
             + ") VALUES ('"
             + S_NUM(model.id) + "','"
-            + model.name + "','"
-            + model.description + "','"
-            + S_NUM(model.currency.id) + "','"
-            + S_NUM(model.icon.id) + "','"
-            + model.color.hex() + "');";
+            + static_cast<const MCategory&>(model).name + "','"
+            + static_cast<const MCategory&>(model).description + "','"
+            + S_NUM(static_cast<const MCategory&>(model).currency.id) + "','"
+            + S_NUM(static_cast<const MCategory&>(model).icon.id) + "','"
+            + static_cast<const MCategory&>(model).color.hex() + "');";
 
     auto [query, result] = MakeQuery(text);
 
@@ -63,18 +68,18 @@ void Category::Add(const Models::Category &model)
     }
 }
 
-void Category::Edit(const Models::Category &model)
+void Category::Edit(const MBase &model)
 {
     QString text = "UPDATE "
-            + CategData::tableDB()
+            + DataCategory::tableName()
             + " SET "
-            + CategData::nameColumnDB() + " = '" + model.name + "',"
-            + CategData::descriptionColumnDB() + " = '" + model.description + "',"
-            + CategData::idCurrencyColumnDB() + " = '" + S_NUM(model.currency.id) + "',"
-            + CategData::idIconColumnDB() + " = '" + S_NUM(model.icon.id) + "',"
-            + CategData::colorColumnDB() + " = '" + model.color.hex() + "' "
+            + DataCategory::name() + " = '" + static_cast<const MCategory&>(model).name + "',"
+            + DataCategory::description() + " = '" + static_cast<const MCategory&>(model).description + "',"
+            + DataCategory::idCurrency() + " = '" + S_NUM(static_cast<const MCategory&>(model).currency.id) + "',"
+            + DataCategory::idIcon() + " = '" + S_NUM(static_cast<const MCategory&>(model).icon.id) + "',"
+            + DataCategory::color() + " = '" + static_cast<const MCategory&>(model).color.hex() + "' "
             + " WHERE "
-            + CategData::idColumnDB() + " = '" + S_NUM(model.id) + "';";
+            + DataCategory::id() + " = '" + S_NUM(model.id) + "';";
 
     auto [query, result] = MakeQuery(text);
 
@@ -83,19 +88,19 @@ void Category::Edit(const Models::Category &model)
     }
 }
 
-Models::Category Category::Get(uint id)
+Ref<MBase> Category::Get(uint id)
 {
     QString text = "SELECT "
-            + CategData::idColumnDB() + ","
-            + CategData::nameColumnDB() + ","
-            + CategData::descriptionColumnDB() + ","
-            + CategData::idCurrencyColumnDB() + ","
-            + CategData::idIconColumnDB() + ","
-            + CategData::colorColumnDB() + " "
+            + DataCategory::id() + ","
+            + DataCategory::name() + ","
+            + DataCategory::description() + ","
+            + DataCategory::idCurrency() + ","
+            + DataCategory::idIcon() + ","
+            + DataCategory::color() + " "
             + " FROM "
-            + CategData::tableDB()
+            + DataCategory::tableName()
             + " WHERE "
-            + CategData::idColumnDB() + " = '"
+            + DataCategory::id() + " = '"
             + S_NUM(id) + "';";
 
     auto [query, result] = MakeQuery(text);
@@ -104,24 +109,29 @@ Models::Category Category::Get(uint id)
         throw ExceptionDB("Category::Get : query error");
     }
 
-    Models::Category output;
+    auto output = CreateRef<MCategory>();
     if(query->next()) {
-        output = getModelFromQuery(query.get());
+        *output = getModelFromQuery(query.get());
     }
     return output;
 }
 
-QList<Models::Category> Category::GetAll()
+void Category::Remove(uint id)
+{
+    QBase::removeRow(id, DataCategory::tableName(), DataCategory::id());
+}
+
+QVariantList Category::GetAll()
 {
     QString text = "SELECT "
-            + CategData::idColumnDB() + ","
-            + CategData::nameColumnDB() + ","
-            + CategData::descriptionColumnDB() + ","
-            + CategData::idCurrencyColumnDB() + ","
-            + CategData::idIconColumnDB() + ","
-            + CategData::colorColumnDB() + " "
+            + DataCategory::id() + ","
+            + DataCategory::name() + ","
+            + DataCategory::description() + ","
+            + DataCategory::idCurrency() + ","
+            + DataCategory::idIcon() + ","
+            + DataCategory::color() + " "
             + " FROM "
-            + CategData::tableDB() + ";";
+            + DataCategory::tableName() + ";";
 
     auto [query, result] = MakeQuery(text);
 
@@ -129,33 +139,16 @@ QList<Models::Category> Category::GetAll()
         throw ExceptionDB("Category::Get All: query error");
     }
 
-    QList<Models::Category> output;
+    QVariantList output;
     while(query->next()) {
-        output.push_back(getModelFromQuery(query.get()));
+        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
     }
     return output;
 }
 
-void Category::Remove(uint id)
+MCategory Category::getModelFromQuery(QSqlQuery *query)
 {
-    QString text = "DELETE FROM "
-            + CategData::tableDB()
-            + " WHERE "
-            + CategData::idColumnDB()
-            + " = '"
-            + S_NUM(id)
-            + "';";
-
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Remove: query error");
-    }
-}
-
-Models::Category Category::getModelFromQuery(QSqlQuery *query)
-{
-    Models::Category category;
+    MCategory category;
 
     category.id = query->value(0).toUInt();
     category.name = query->value(1).toString();

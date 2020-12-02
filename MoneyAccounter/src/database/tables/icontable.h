@@ -2,7 +2,7 @@
 #define ICONTABLE_H
 
 #include "basetable.h"
-#include "../../core/iconsnames.h"
+#include "../../models/icon.h"
 #include "../../core/base.h"
 
 namespace DB::Tables {
@@ -14,14 +14,17 @@ public:
     ~QIcon() = default;
 
     void CreateTable() override;
-    void Add(const Models::Icon& model);
-    Models::Icon Get(uint id);
-    Icons GetAll();
+    void Add(const MBase &model) override;
+    void Edit(const MBase &model) override;
+    void Remove(uint id) override;
+    Ref<MBase> Get(uint id) override;
+    QVariantList GetAll() override;
 
 private:
-    inline Models::Icon getModelFromQuery(QSqlQuery *query);
+    MIcon getModelFromQuery(QSqlQuery *query);
 };
 
 }
+Q_DECLARE_METATYPE(MIcon);
 
 #endif // ICONTABLE_H

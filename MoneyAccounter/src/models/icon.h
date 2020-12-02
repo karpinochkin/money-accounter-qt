@@ -12,12 +12,11 @@ public:
     bool isCorrect() const override {
         return !(id < 1 || path.isEmpty());
     }
-
-    bool isCorrectDB() const override {
-        return isCorrect();
-    }
 };
 
 }
+
+using MIcon = Models::Icon;
+using MIcons = QList<Models::Icon>;
 
 #endif // ICON_H
