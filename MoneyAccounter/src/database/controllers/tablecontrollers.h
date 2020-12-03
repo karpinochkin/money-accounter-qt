@@ -84,9 +84,9 @@ private:
 class QCashAccount : public QController
 {
 public:
-    explicit QCashAccount(QCurrency *currency,
-                          QIcon *icon,
-                          QCashAccountType *cashAccType,
+    explicit QCashAccount(QCurrency &currency,
+                          QIcon &icon,
+                          QCashAccountType &cashAccType,
                           QSqlDatabase &database,
                           QObject *parent = nullptr);
     ~QCashAccount() = default;
@@ -101,16 +101,16 @@ public:
 private:
     Scope<Tables::CashAccount> cashAccTable;
 
-    QCurrency *currencyCntrl = nullptr;
-    QIcon *iconCntrl = nullptr;
-    QCashAccountType *cashAccTypeCntrl = nullptr;
+    QCurrency &currencyCntrl;
+    QIcon &iconCntrl;
+    QCashAccountType &cashAccTypeCntrl;
 };
 
 class QCategory : public QController
 {
 public:
-    explicit QCategory(QCurrency *currencyCntrl,
-                       QIcon *iconCntrl,
+    explicit QCategory(QCurrency &currencyCntrl,
+                       QIcon &iconCntrl,
                        QSqlDatabase &database,
                        QObject *parent = nullptr);
     ~QCategory() = default;
@@ -125,15 +125,15 @@ public:
 private:
     Scope<Tables::Category> category;
 
-    QCurrency *currencyCntrl = nullptr;
-    QIcon *iconCntrl = nullptr;
+    QCurrency &currencyCntrl;
+    QIcon &iconCntrl;
 };
 
 class QTransaction : public QController
 {
 public:
-    explicit QTransaction(QCashAccount* cashAccCntrl,
-                          QCategory* categoryCntrl,
+    explicit QTransaction(QCashAccount& cashAccCntrl,
+                          QCategory& categoryCntrl,
                           QSqlDatabase &database,
                           QObject *parent = nullptr);
     ~QTransaction() = default;
@@ -148,8 +148,8 @@ public:
 private:
     Scope<Tables::Transaction> transaction;
 
-    QCashAccount* cashAccCntrl = nullptr;
-    QCategory* categoryCntrl = nullptr;
+    QCashAccount& cashAccCntrl;
+    QCategory& categoryCntrl;
 };
 
 }

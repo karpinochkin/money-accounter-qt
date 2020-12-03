@@ -36,6 +36,7 @@ private:
 namespace DB::Tables {
 
 using QueryBool = std::tuple<std::shared_ptr<QSqlQuery>, bool>;
+using Query = std::shared_ptr<QSqlQuery>;
 
 ///
 /// \brief The QBase class - abstract base db tables class
@@ -44,8 +45,8 @@ class QBase : public QObject
 {
 public:
     ~QBase();
-    QueryBool MakeQuery(const QString &textQuery);
-    QueryBool MakeQuery(const QString &textQuery,
+    Query MakeQuery(const QString &textQuery);
+    Query MakeQuery(const QString &textQuery,
                         const QString &bindName,
                         QVariant bindValue);
 
@@ -61,6 +62,24 @@ protected:
 
     void removeRow(uint id, const QString &tableName, const QString &idColumnName);
 
+    template<typename T> QVariantList getAllRows(QSqlQuery* query) {
+        QVariantList list;
+        while(query->next()) {
+            T m;
+            m << query;
+            list.push_back(QVariant::fromValue(m));
+        }
+        return list;
+    }
+
+    template<typename T> Ref<T> getRow(QSqlQuery *query) {
+        auto output = CreateRef<T>();
+        if(query->next()) {
+            *output << query;
+        }
+        return output;
+    }
+
 private:
     QMutex *mutex = nullptr;
     QSqlDatabase db;
@@ -69,8 +88,6 @@ private:
     QueryBool execQuery(const QString &textQuery,
                         const QString &bindName,
                         QVariant bindValue);
-    inline void printTextError(const QString &textError,
-                               const QString &textQuery);
     inline void checkDatabaseValid() const;
     void openDatabaseIfNotOpened();
 };

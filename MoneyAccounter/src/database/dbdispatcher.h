@@ -13,18 +13,18 @@ public:
     QDispatcher(const QString &dbName, QObject *parent = nullptr);
     ~QDispatcher();
 
-    Controllers::QCashAccount& CashAccount();
-    Controllers::QCategory& Category();
-    Controllers::QTransaction& Transaction();
+    Controllers::QCashAccount& CashAccount() const;
+    Controllers::QCategory& Category() const;
+    Controllers::QTransaction &Transaction() const;
 
 private:
     QSqlDatabase db;
-    Ref<Controllers::QCurrency> currency;
-    Ref<Controllers::QIcon> icon;
-    Ref<Controllers::QCashAccountType> cashAccountType;
-    Ref<Controllers::QCashAccount> cashAccount;
-    Ref<Controllers::QCategory> category;
-    Ref<Controllers::QTransaction> transaction;
+    Scope<Controllers::QCurrency> currency;
+    Scope<Controllers::QIcon> icon;
+    Scope<Controllers::QCashAccountType> cashAccountType;
+    Scope<Controllers::QCashAccount> cashAccount;
+    Scope<Controllers::QCategory> category;
+    Scope<Controllers::QTransaction> transaction;
 
     void createControllers();
     void fillDB();

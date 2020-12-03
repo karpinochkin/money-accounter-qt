@@ -30,10 +30,7 @@ void CashAccoutType::CreateTable()
             + " BOOLEAN NOT NULL CHECK ("
             + DataCashAccType::isIncludePurpose() + " != '') DEFAULT (0));";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("CashAccoutType::CreateTable() : query error");
-    }
+    this->MakeQuery(text);
     qDebug() << DataCashAccType::tableName() + " is created";
 }
 
@@ -60,11 +57,7 @@ void CashAccoutType::Add(const MBase &model)
             + S_NUM(static_cast<const MCashAccType&>(
                         model).settings.isIncludePurpose) + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if(!result) {
-        throw ExceptionDB("CashAccoutType::Add : query error");
-    }
+    this->MakeQuery(text);
 }
 
 void CashAccoutType::Edit(const MBase &model)
@@ -90,11 +83,7 @@ void CashAccoutType::Edit(const MBase &model)
             + " WHERE "
             + DataCashAccType::id() + " = '" + S_NUM(model.id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Edit : query error");
-    }
+    this->MakeQuery(text);
 }
 
 Ref<MBase> CashAccoutType::Get(uint id)
@@ -112,17 +101,8 @@ Ref<MBase> CashAccoutType::Get(uint id)
             + DataCashAccType::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("CashAccoutType::Get : query error");
-    }
-
-    auto output = CreateRef<MCashAccType>();
-    if (query->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MCashAccType>(query.get());;
 }
 
 void CashAccoutType::Remove(uint id)
@@ -142,31 +122,8 @@ QVariantList CashAccoutType::GetAll()
             + " FROM "
             + DataCashAccType::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("CashAccoutType::GetAll : query error");
-    }
-
-    QVariantList output;
-    while (query->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-
-    return output;
-}
-
-MCashAccType CashAccoutType::getModelFromQuery(QSqlQuery *query)
-{
-    MCashAccType category;
-
-    category.id = query->value(0).toUInt();
-    category.name = query->value(1).toString();
-    category.description = query->value(2).toString();
-    category.settings.isIncludeDebt = query->value(3).toBool();
-    category.settings.isIncludeRefund = query->value(4).toBool();
-    category.settings.isIncludePurpose = query->value(5).toBool();
-
-    return category;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MCashAccType>(query.get());
 }
 
 CashAccount::CashAccount(QSqlDatabase &database, QObject *parent)
@@ -220,10 +177,7 @@ void CashAccount::CreateTable()
             + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
             + DataCashAcc::idCashAccountType() + " > 0) DEFAULT(1));";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("CashAccount::CreateTable() : query error");
-    }
+    auto query = MakeQuery(text);
     qDebug() << DataCashAcc::tableName() + " is created";
 }
 
@@ -272,11 +226,7 @@ void CashAccount::Add(const MBase &model)
             + S_NUM(static_cast<const MCashAcc&>(
                         model).type.id) + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Add : query error");
-    }
+    auto query = MakeQuery(text);
 }
 
 void CashAccount::Edit(const MBase &model)
@@ -323,11 +273,7 @@ void CashAccount::Edit(const MBase &model)
             + " WHERE "
             + DataCashAcc::id() + " = '" + S_NUM(model.id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Edit : query error");
-    }
+    auto query = MakeQuery(text);
 
 }
 
@@ -353,17 +299,8 @@ Ref<MBase> CashAccount::Get(uint id)
             + DataCashAcc::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Get : query error");
-    }
-
-    auto output = CreateRef<MCashAcc>();
-    if(query->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MCashAcc>(query.get());
 
 }
 
@@ -391,38 +328,8 @@ QVariantList CashAccount::GetAll()
             + " FROM "
             + DataCashAcc::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("CashAccount::Get All: query error");
-    }
-
-    QVariantList output;
-    while(query->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-    return output;
-}
-
-MCashAcc CashAccount::getModelFromQuery(QSqlQuery *query)
-{
-    MCashAcc cashAcc;
-
-    cashAcc.id = query->value(0).toUInt();
-    cashAcc.name = query->value(1).toString();
-    cashAcc.description = query->value(2).toString();
-    cashAcc.icon.id = query->value(3).toUInt();
-    cashAcc.color.set(query->value(4).toString());
-    cashAcc.currency.id = query->value(5).toUInt();
-    cashAcc.balance.setAsDouble(query->value(6).toDouble());
-    cashAcc.refund.setAsDouble(query->value(7).toDouble());
-    cashAcc.debt.setAsDouble(query->value(8).toDouble());
-    cashAcc.purpose.setAsDouble(query->value(9).toDouble());
-    cashAcc.settings.displayInExpenses = query->value(10).toBool();
-    cashAcc.settings.displayInOverallBalance = query->value(11).toBool();
-    cashAcc.type.id = query->value(12).toUInt();
-
-    return cashAcc;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MCashAcc>(query.get());
 }
 
 }

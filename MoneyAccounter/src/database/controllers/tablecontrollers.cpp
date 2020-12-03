@@ -185,9 +185,9 @@ MCashAccTypes DB::Controllers::QCashAccountType::GetAll()
     }
 }
 
-DB::Controllers::QCashAccount::QCashAccount(QCurrency *currency,
-                                            QIcon *icon,
-                                            QCashAccountType *cashAccType,
+DB::Controllers::QCashAccount::QCashAccount(QCurrency &currency,
+                                            QIcon &icon,
+                                            QCashAccountType &cashAccType,
                                             QSqlDatabase &database,
                                             QObject *parent)
     : QController(database, parent),
@@ -240,9 +240,9 @@ MCashAcc DB::Controllers::QCashAccount::Get(uint id)
 {
     try {
         auto model = std::dynamic_pointer_cast<MCashAcc>(cashAccTable->Get(id));
-        model->icon = iconCntrl->Get(model->icon.id);
-        model->currency = currencyCntrl->Get(model->currency.id);
-        model->type = cashAccTypeCntrl->Get(model->type.id);
+        model->icon = iconCntrl.Get(model->icon.id);
+        model->currency = currencyCntrl.Get(model->currency.id);
+        model->type = cashAccTypeCntrl.Get(model->type.id);
         isModelCorrect(model.get());
 
         return *(model);
@@ -260,9 +260,9 @@ MCashAccs DB::Controllers::QCashAccount::GetAll()
         for (auto variant : cashAccTable->GetAll()) {
             try {
                 auto m = unpack<MCashAcc>(variant);
-                m.icon = iconCntrl->Get(m.icon.id);
-                m.currency = currencyCntrl->Get(m.currency.id);
-                m.type = cashAccTypeCntrl->Get(m.type.id);
+                m.icon = iconCntrl.Get(m.icon.id);
+                m.currency = currencyCntrl.Get(m.currency.id);
+                m.type = cashAccTypeCntrl.Get(m.type.id);
                 isModelCorrect(&m);
                 models.push_back(m);
             } catch (const ExceptionDB &err) {
@@ -287,7 +287,7 @@ bool DB::Controllers::QCashAccount::Remove(uint id)
     }
 }
 
-DB::Controllers::QCategory::QCategory(QCurrency *currencyCntrl, QIcon *iconCntrl, QSqlDatabase &database, QObject *parent)
+DB::Controllers::QCategory::QCategory(QCurrency &currencyCntrl, QIcon &iconCntrl, QSqlDatabase &database, QObject *parent)
     : QController(database, parent),
       currencyCntrl(currencyCntrl),
       iconCntrl(iconCntrl)
@@ -337,8 +337,8 @@ MCategory DB::Controllers::QCategory::Get(uint id)
 {
     try {
         auto model = std::dynamic_pointer_cast<MCategory>(category->Get(id));
-        model->icon = iconCntrl->Get(model->icon.id);
-        model->currency = currencyCntrl->Get(model->currency.id);
+        model->icon = iconCntrl.Get(model->icon.id);
+        model->currency = currencyCntrl.Get(model->currency.id);
         isModelCorrect(model.get());
 
         return *(model);
@@ -357,8 +357,8 @@ MCategories DB::Controllers::QCategory::GetAll()
         for (auto variant : category->GetAll()) {
             try {
                 auto m = unpack<MCategory>(variant);
-                m.icon = iconCntrl->Get(m.icon.id);
-                m.currency = currencyCntrl->Get(m.currency.id);
+                m.icon = iconCntrl.Get(m.icon.id);
+                m.currency = currencyCntrl.Get(m.currency.id);
                 isModelCorrect(&m);
                 models.push_back(m);
             } catch (const ExceptionDB &err) {
@@ -383,8 +383,8 @@ bool DB::Controllers::QCategory::Remove(uint id)
     }
 }
 
-DB::Controllers::QTransaction::QTransaction(QCashAccount *cashAccCntrl,
-                                            QCategory *categoryCntrl,
+DB::Controllers::QTransaction::QTransaction(QCashAccount &cashAccCntrl,
+                                            QCategory &categoryCntrl,
                                             QSqlDatabase &database,
                                             QObject *parent)
     : QController(database, parent),
@@ -436,8 +436,8 @@ MTransact DB::Controllers::QTransaction::Get(uint id)
 {
     try {
         auto model = std::dynamic_pointer_cast<MTransact>(transaction->Get(id));
-        model->cashAccount = cashAccCntrl->Get(model->cashAccount.id);
-        model->category = categoryCntrl->Get(model->category.id);
+        model->cashAccount = cashAccCntrl.Get(model->cashAccount.id);
+        model->category = categoryCntrl.Get(model->category.id);
         isModelCorrect(model.get());
 
         return *(model);
@@ -456,8 +456,8 @@ MTransactions DB::Controllers::QTransaction::GetAll()
         for (auto variant : transaction->GetAll()) {
             try {
                 auto m = unpack<MTransact>(variant);
-                m.cashAccount = cashAccCntrl->Get(m.cashAccount.id);
-                m.category = categoryCntrl->Get(m.category.id);
+                m.cashAccount = cashAccCntrl.Get(m.cashAccount.id);
+                m.category = categoryCntrl.Get(m.category.id);
                 isModelCorrect(&m);
                 models.push_back(m);
             } catch (const ExceptionDB &err) {

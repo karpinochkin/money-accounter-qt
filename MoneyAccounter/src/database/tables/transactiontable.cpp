@@ -34,10 +34,7 @@ void DB::Tables::Transaction::CreateTable()
             + ")  ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL "
             + "CHECK (" + DataTransact::idCategory() + " > 0) DEFAULT(1));";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("DataTransact::CreateTable() : query error");
-    }
+    this->MakeQuery(text);
     qDebug() << DataTransact::tableName() + " is created";
 }
 
@@ -67,11 +64,7 @@ void DB::Tables::Transaction::Add(const MBase &model)
             + S_NUM(static_cast<const MTransact&>
                     (model).category.id) + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Transaction::Add : query error");
-    }
+    this->MakeQuery(text);
 }
 
 void DB::Tables::Transaction::Edit(const MBase &model)
@@ -100,11 +93,7 @@ void DB::Tables::Transaction::Edit(const MBase &model)
             + " WHERE "
             + DataTransact::id() + " = '" + S_NUM(model.id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Transaction::Edit : query error");
-    }
+    this->MakeQuery(text);
 }
 
 Ref<MBase> DB::Tables::Transaction::Get(uint id)
@@ -123,17 +112,8 @@ Ref<MBase> DB::Tables::Transaction::Get(uint id)
             + DataTransact::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Transaction::Get : query error");
-    }
-
-    auto output = CreateRef<MTransact>();
-    if(query->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MTransact>(query.get());;
 }
 
 void DB::Tables::Transaction::Remove(uint id)
@@ -154,30 +134,6 @@ QVariantList DB::Tables::Transaction::GetAll()
             + " FROM "
             + DataTransact::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Transaction::Get All: query error");
-    }
-
-    QVariantList output;
-    while(query->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-    return output;
-}
-
-MTransact DB::Tables::Transaction::getModelFromQuery(QSqlQuery *query)
-{
-    MTransact output;
-
-    output.id = query->value(0).toUInt();
-    output.name = query->value(1).toString();
-    output.description = query->value(2).toString();
-    output.datetime = QDateTime::fromString(query->value(3).toString());
-    output.sum.setAsDouble(query->value(4).toDouble());
-    output.cashAccount.id = query->value(5).toUInt();
-    output.category.id = query->value(6).toUInt();
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MTransact>(query.get());
 }

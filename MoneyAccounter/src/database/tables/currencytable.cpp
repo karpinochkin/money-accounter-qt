@@ -23,11 +23,7 @@ void QCurrency::CreateTable()
             + DataCurrency::symbol()
             + " != ''));";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("QCurrency::CreateTable() : query error");
-    }
+    this->MakeQuery(text);
     qDebug() << DataCurrency::tableName() + " is created";
 }
 
@@ -46,11 +42,7 @@ void QCurrency::Add(const MBase &model)
             + static_cast<const MCurrency&>(
                 model).symbol + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if(!result) {
-        throw ExceptionDB("QCurrency::Add : query error");
-    }
+    this->MakeQuery(text);
 }
 
 void QCurrency::Edit(const MBase &model)
@@ -67,11 +59,7 @@ void QCurrency::Edit(const MBase &model)
             + " WHERE "
             + DataCurrency::id() + " = '"
             + S_NUM(model.id) + "';";
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Edit : query error");
-    }
+    this->MakeQuery(text);
 }
 
 Ref<MBase> QCurrency::Get(uint id)
@@ -86,17 +74,8 @@ Ref<MBase> QCurrency::Get(uint id)
             + DataCurrency::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("QCurrency::Get : query error");
-    }
-
-    auto output = CreateRef<MCurrency>();
-    if(query->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MCurrency>(query.get());;
 }
 
 void QCurrency::Remove(uint id)
@@ -113,28 +92,7 @@ QVariantList QCurrency::GetAll()
             + " FROM "
             + DataCurrency::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);;
-
-            if (!result) {
-        throw ExceptionDB("QCurrency::GetAll() : query error");
-    }
-
-    QVariantList output;
-    while (query->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MCurrency>(query.get());
 }
-
-MCurrency QCurrency::getModelFromQuery(QSqlQuery *query)
-{
-    MCurrency currency{};
-    currency.id = query->value(0).toUInt();
-    currency.name = query->value(1).toString();
-    currency.symbol = query->value(2).toString();
-
-    return currency;
-}
-
 }

@@ -19,9 +19,6 @@ public:
     void Remove(uint id) override;
     Ref<MBase> Get(uint id) override;
     QVariantList GetAll() override;
-
-private:
-    MIcon getModelFromQuery(QSqlQuery *query);
 };
 
 }

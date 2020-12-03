@@ -10,9 +10,9 @@ namespace DB::Controllers {
 auto currency = CreateScope<DB::Controllers::QCurrency>(db);
 auto icon = CreateScope<DB::Controllers::QIcon>(db);
 auto cashAccType = CreateScope<DB::Controllers::QCashAccountType>(db);
-auto cashAcc = CreateScope<DB::Controllers::QCashAccount>(currency.get(), icon.get(), cashAccType.get(), db);
-auto category = CreateScope<DB::Controllers::QCategory>(currency.get(), icon.get(), db);
-auto transaction = CreateScope<DB::Controllers::QTransaction>(cashAcc.get(), category.get(), db);
+auto cashAcc = CreateScope<DB::Controllers::QCashAccount>(*currency, *icon, *cashAccType, db);
+auto category = CreateScope<DB::Controllers::QCategory>(*currency, *icon, db);
+auto transaction = CreateScope<DB::Controllers::QTransaction>(*cashAcc, *category, db);
 
 TEST(controller_start_test, open_db) {
     ASSERT_TRUE(openDB());

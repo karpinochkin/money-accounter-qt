@@ -12,6 +12,11 @@ public:
     bool isCorrect() const override {
         return !(id < 1 || path.isEmpty());
     }
+
+    void operator<<(QSqlQuery *query) {
+        id = query->value(0).toUInt();
+        path = query->value(1).toString();
+    }
 };
 
 }

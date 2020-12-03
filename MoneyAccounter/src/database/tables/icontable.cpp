@@ -17,11 +17,7 @@ void QIcon::CreateTable()
             + DataIcon::path() + " STRING UNIQUE NOT NULL CHECK("
                                          + DataIcon::path() + " != '') DEFAULT defaultpath);";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("QIcon::CreateTable() : query error");
-    }
+    this->MakeQuery(text);
     qDebug() << DataIcon::tableName() + " is created";
 }
 
@@ -35,11 +31,7 @@ void QIcon::Add(const MBase &model)
             + S_NUM(model.id) + "','"
             + static_cast<const MIcon&>(model).path + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if(!result) {
-        throw ExceptionDB("QIcon::Add : query error");
-    }
+    this->MakeQuery(text);
 }
 
 Ref<MBase> QIcon::Get(uint id)
@@ -53,17 +45,8 @@ Ref<MBase> QIcon::Get(uint id)
             + DataIcon::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("QIcon::Get : query error");
-    }
-
-    auto output = CreateRef<MIcon>();
-    if(query.get()->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MIcon>(query.get());;
 }
 
 void QIcon::Remove(uint id)
@@ -79,18 +62,8 @@ QVariantList QIcon::GetAll()
             + " FROM "
             + DataIcon::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);;
-
-            if (!result) {
-        throw ExceptionDB("QIcon::GetAll() : query error");
-    }
-
-    QVariantList output;
-    while (query.get()->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MIcon>(query.get());
 }
 
 void QIcon::Edit(const MBase &model)
@@ -102,18 +75,7 @@ void QIcon::Edit(const MBase &model)
             + " WHERE "
             + DataIcon::id() + " = '" + S_NUM(model.id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("QIcon::Edit : query error");
-    }
-}
-MIcon QIcon::getModelFromQuery(QSqlQuery *query)
-{
-   MIcon icon;
-   icon.id = query->value(0).toUInt();
-   icon.path = query->value(1).toString();
-   return icon;
+    this->MakeQuery(text);
 }
 
 }

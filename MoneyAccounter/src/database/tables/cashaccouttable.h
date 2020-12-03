@@ -19,9 +19,6 @@ public:
     Ref<MBase> Get(uint id) override;
     void Remove(uint id) override;
     QVariantList GetAll() override;
-
-private:
-    inline MCashAccType getModelFromQuery(QSqlQuery *query);
 };
 
 class CashAccount : public QBase
@@ -36,9 +33,6 @@ public:
     void Remove(uint id) override;
     Ref<MBase> Get(uint id) override;
     QVariantList GetAll() override;
-
-private:
-    MCashAcc getModelFromQuery(QSqlQuery *query);
 };
 
 }

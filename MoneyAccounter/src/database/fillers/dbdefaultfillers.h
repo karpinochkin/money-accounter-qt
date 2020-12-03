@@ -26,24 +26,25 @@ protected:
 
 class QCurrencyFiller : public QFillerBase {
 public:
-    QCurrencyFiller(Ref<Controllers::QCurrency> &currency);
+//    QCurrencyFiller(Ref<Controllers::QCurrency> &currency);
+    QCurrencyFiller(Controllers::QCurrency &currency);
     ~QCurrencyFiller() = default;
 
 private:
-    Ref<Controllers::QCurrency> m_currency;
+//    Ref<Controllers::QCurrency> m_currency;
+    Controllers::QCurrency &m_currency;
 
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
-//    Symbols getSymbols(const KIDRow &row, uint currencyID, uint &symID);
 };
 
 class QIconFiller : public QFillerBase {
 public:
-    QIconFiller(Ref<Controllers::QIcon> &icon);
+    QIconFiller(Controllers::QIcon &icon);
     ~QIconFiller() = default;
 
 private:
-    Ref<Controllers::QIcon> m_icon;
+    Controllers::QIcon &m_icon;
     void addIntoDB(const QList<KIDRow> &qrc);
 
     void setDefaultValuesIntoTables() override;
@@ -51,33 +52,33 @@ private:
 
 class QCashAccountTypeFiller : public QFillerBase {
 public:
-    QCashAccountTypeFiller(Ref<Controllers::QCashAccountType> &category);
+    QCashAccountTypeFiller(Controllers::QCashAccountType &type);
     ~QCashAccountTypeFiller() = default;
 
 private:
-    Ref<Controllers::QCashAccountType> m_category;
+    Controllers::QCashAccountType &m_type;
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };
 
 class QCashAccountFiller : public QFillerBase {
 public:
-    QCashAccountFiller(Ref<Controllers::QCashAccount> &cashAcc);
+    QCashAccountFiller(Controllers::QCashAccount &cashAcc);
     ~QCashAccountFiller() = default;
 
 private:
-    Ref<Controllers::QCashAccount> &m_cashAcc;
+    Controllers::QCashAccount &m_cashAcc;
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };
 
 class QCategoryFiller : public QFillerBase {
 public:
-    QCategoryFiller(Ref<Controllers::QCategory> &category);
+    QCategoryFiller(Controllers::QCategory &category);
     ~QCategoryFiller() = default;
 
 private:
-    Ref<Controllers::QCategory> &m_category;
+    Controllers::QCategory &m_category;
     void setDefaultValuesIntoTables() override;
     void addIntoDB(const QList<KIDRow> &kid);
 };

@@ -2,7 +2,13 @@
 
 namespace DB::DefaultFillers {
 
-QCurrencyFiller::QCurrencyFiller(Ref<Controllers::QCurrency> &currency)
+//QCurrencyFiller::QCurrencyFiller(Ref<Controllers::QCurrency> &currency)
+//    : m_currency(currency)
+//{
+
+//}
+
+QCurrencyFiller::QCurrencyFiller(Controllers::QCurrency &currency)
     : m_currency(currency)
 {
 
@@ -27,11 +33,11 @@ void QCurrencyFiller::addIntoDB(const QList<KIDRow> &kid)
         currency.name = row.objects.at(1)();
         currency.symbol = row.objects.at(2)();
 
-       m_currency->Add(currency);
+       m_currency.Add(currency);
     }
 }
 
-QIconFiller::QIconFiller(Ref<Controllers::QIcon> &icon)
+QIconFiller::QIconFiller(Controllers::QIcon &icon)
     : m_icon(icon)
 {
 
@@ -47,7 +53,7 @@ void QIconFiller::setDefaultValuesIntoTables()
         for (auto i : qrc) {
             icon.id = id;
             icon.path = i;
-            m_icon->Add(icon);
+            m_icon.Add(icon);
             ++id;
         }
     } catch (ExceptionParser &err) {
@@ -55,8 +61,8 @@ void QIconFiller::setDefaultValuesIntoTables()
     }
 }
 
-QCashAccountTypeFiller::QCashAccountTypeFiller(Ref<Controllers::QCashAccountType> &category)
- : m_category(category)
+QCashAccountTypeFiller::QCashAccountTypeFiller(Controllers::QCashAccountType &type)
+ : m_type(type)
 {
 
 }
@@ -82,11 +88,11 @@ void QCashAccountTypeFiller::addIntoDB(const QList<KIDRow> &kid)
         category.settings.isIncludeRefund = row.objects.at(4)().toInt();
         category.settings.isIncludePurpose = row.objects.at(5)().toInt();
 
-        m_category->Add(category);
+        m_type.Add(category);
     }
 }
 
-QCashAccountFiller::QCashAccountFiller(Ref<Controllers::QCashAccount> &cashAcc)
+QCashAccountFiller::QCashAccountFiller(Controllers::QCashAccount &cashAcc)
     : m_cashAcc(cashAcc)
 {
 
@@ -115,11 +121,11 @@ void QCashAccountFiller::addIntoDB(const QList<KIDRow> &kid)
         cashAcc.balance.setAsDouble(row.objects.at(5)().toDouble());
         cashAcc.type.id = row.objects.at(6)().toUInt();
 
-        m_cashAcc->Add(cashAcc);
+        m_cashAcc.Add(cashAcc);
     }
 }
 
-QCategoryFiller::QCategoryFiller(Ref<Controllers::QCategory> &category)
+QCategoryFiller::QCategoryFiller(Controllers::QCategory &category)
  : m_category(category)
 {
 
@@ -147,7 +153,7 @@ void QCategoryFiller::addIntoDB(const QList<KIDRow> &kid)
         category.icon.id = row.objects.at(4)().toUInt();
         category.color.set(row.objects.at(5)());
 
-        m_category->Add(category);
+        m_category.Add(category);
     }
 }
 

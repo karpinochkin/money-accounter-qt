@@ -35,10 +35,7 @@ void Category::CreateTable()
             + ") ON DELETE SET DEFAULT ON UPDATE CASCADE NOT NULL CHECK("
             + DataCategory::idIcon() + " > 0) DEFAULT(1));";
 
-    auto [query, result] = MakeQuery(text);
-            if (!result) {
-        throw ExceptionDB("Category::CreateTable() : query error");
-    }
+    this->MakeQuery(text);
     qDebug() << DataCategory::tableName() + " is created";
 }
 
@@ -61,11 +58,7 @@ void Category::Add(const MBase &model)
             + S_NUM(static_cast<const MCategory&>(model).icon.id) + "','"
             + static_cast<const MCategory&>(model).color.hex() + "');";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Add : query error");
-    }
+    this->MakeQuery(text);
 }
 
 void Category::Edit(const MBase &model)
@@ -81,11 +74,7 @@ void Category::Edit(const MBase &model)
             + " WHERE "
             + DataCategory::id() + " = '" + S_NUM(model.id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Edit : query error");
-    }
+    this->MakeQuery(text);
 }
 
 Ref<MBase> Category::Get(uint id)
@@ -103,17 +92,8 @@ Ref<MBase> Category::Get(uint id)
             + DataCategory::id() + " = '"
             + S_NUM(id) + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Get : query error");
-    }
-
-    auto output = CreateRef<MCategory>();
-    if(query->next()) {
-        *output = getModelFromQuery(query.get());
-    }
-    return output;
+    auto query = MakeQuery(text);
+    return QBase::getRow<MCategory>(query.get());
 }
 
 void Category::Remove(uint id)
@@ -133,31 +113,8 @@ QVariantList Category::GetAll()
             + " FROM "
             + DataCategory::tableName() + ";";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        throw ExceptionDB("Category::Get All: query error");
-    }
-
-    QVariantList output;
-    while(query->next()) {
-        output.push_back(QVariant::fromValue(getModelFromQuery(query.get())));
-    }
-    return output;
-}
-
-MCategory Category::getModelFromQuery(QSqlQuery *query)
-{
-    MCategory category;
-
-    category.id = query->value(0).toUInt();
-    category.name = query->value(1).toString();
-    category.description = query->value(2).toString();
-    category.currency.id = query->value(3).toUInt();
-    category.icon.id = query->value(4).toUInt();
-    category.color.set(query->value(5).toString());
-
-    return category;
+    auto query = MakeQuery(text);
+    return QBase::getAllRows<MCategory>(query.get());
 }
 
 }

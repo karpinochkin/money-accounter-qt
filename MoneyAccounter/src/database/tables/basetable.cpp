@@ -19,12 +19,7 @@ void QBase::removeRow(uint id, const QString &tableName, const QString &idColumn
             + S_NUM(id)
             + "';";
 
-    auto [query, result] = MakeQuery(text);
-
-            if (!result) {
-        QString err = tableName + " : remove query error";
-        throw ExceptionDB(err.toStdString());
-    }
+    this->MakeQuery(text);
 }
 
 QBase::QBase::~QBase()
@@ -32,25 +27,27 @@ QBase::QBase::~QBase()
     delete mutex;
 }
 
-QueryBool QBase::MakeQuery(const QString &textQuery)
+Query QBase::MakeQuery(const QString &textQuery)
 {
     auto [query, result] = execQuery(textQuery);
             if (!result) {
-        printTextError(query.get()->lastError().text(), textQuery);
+        QString err = query.get()->lastError().text() + "\n" + textQuery;
+        throw ExceptionDB(err.toStdString());
     }
 
-    return std::make_tuple(query, result);
+    return query;
 }
 
-QueryBool QBase::MakeQuery(const QString &textQuery,
+Query QBase::MakeQuery(const QString &textQuery,
                                        const QString &bindName,
                                        QVariant bindValue) {
     auto [query, result] = execQuery(textQuery, bindName, bindValue);
             if (!result) {
-        printTextError(query.get()->lastError().text(), textQuery);
+        QString err = query.get()->lastError().text() + "\n" + textQuery;
+        throw ExceptionDB(err.toStdString());
     }
 
-    return std::make_tuple(query, result);
+    return query;
 }
 
 QueryBool QBase::execQuery(const QString &textQuery)
@@ -95,12 +92,6 @@ QueryBool QBase::execQuery(const QString &textQuery,
     mutex->unlock();
 
     return std::make_tuple(query, result);
-}
-
-void QBase::printTextError(const QString &textError, const QString &textQuery)
-{
-    qDebug()<<"Error query: "<<textError;
-    qDebug()<<"textQuery = "<<textQuery;
 }
 
 void QBase::checkDatabaseValid() const

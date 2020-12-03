@@ -17,6 +17,15 @@ struct Category : public Base {
     bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || !currency.isCorrect() || !icon.isCorrect());
     }
+
+    void operator<<(QSqlQuery* query) {
+        id = query->value(0).toUInt();
+        name = query->value(1).toString();
+        description = query->value(2).toString();
+        currency.id = query->value(3).toUInt();
+        icon.id = query->value(4).toUInt();
+        color.set(query->value(5).toString());
+    }
 };
 
 }

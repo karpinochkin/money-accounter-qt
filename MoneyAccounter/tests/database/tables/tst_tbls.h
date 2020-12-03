@@ -28,9 +28,7 @@ TEST(currency_table_test, create_table) {
     currency->CreateTable();
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::Currency::tableName() + "';";
 
-    auto [query, result] = currency->MakeQuery(text);
-            ASSERT_TRUE(result);
-
+    auto query = currency->MakeQuery(text);
             QString answer = "";
             if (query->next()) {
         answer = query->value(0).toString();
@@ -56,8 +54,7 @@ TEST(currency_table_test, add_test) {
             + " from " + DB::Tables::Data::Currency::tableName()
             + " where " + DB::Tables::Data::Currency::id()
             + " = '2';";
-    auto [query, result] = currency->MakeQuery(text);
-    ASSERT_TRUE(result);
+    auto query = currency->MakeQuery(text);
     if(query->next()) {
         ASSERT_EQ(query->value(0).toString(), "Euro");
         ASSERT_EQ(query->value(1).toString(), "EUR");
@@ -95,8 +92,7 @@ TEST(icon_table_test, CreateTable) {
 
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::Icon::tableName() + "';";
 
-    auto [query, result] = icon->MakeQuery(text);
-            ASSERT_TRUE(result);
+    auto query = icon->MakeQuery(text);
 
             QString answer = "";
             if (query->next()) {
@@ -125,8 +121,7 @@ TEST(icon_table_test, Add) {
             + " where " + DB::Tables::Data::Icon::id()
             + " = '3';";
 
-    auto [query, result] = icon->MakeQuery(text);
-    ASSERT_TRUE(result);
+    auto query = icon->MakeQuery(text);
     if(query->next()) {
         ASSERT_EQ(query->value(0).toString(), "path123");
     }
@@ -166,8 +161,7 @@ TEST(cash_accs_categ_table_test, CreateTable) {
 
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::CashAccountType::tableName() + "';";
 
-    auto [query, result] = cashAccsCateg->MakeQuery(text);
-            ASSERT_TRUE(result);
+    auto query = cashAccsCateg->MakeQuery(text);
 
             QString answer = "";
             if (query->next()) {
@@ -244,8 +238,7 @@ TEST(cash_acc_table_test, CreateTable) {
 
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::CashAccount::tableName() + "';";
 
-    auto [query, result] = cashAcc->MakeQuery(text);
-            ASSERT_TRUE(result);
+    auto query = cashAcc->MakeQuery(text);
 
             QString answer = "";
             if (query->next()) {
@@ -387,8 +380,7 @@ TEST(category_table_test, CreateTable) {
 
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::Category::tableName() + "';";
 
-    auto [query, result] = category->MakeQuery(text);
-            ASSERT_TRUE(result);
+    auto query = category->MakeQuery(text);
 
             QString answer = "";
             if (query->next()) {
@@ -492,8 +484,7 @@ TEST(transaction_table_test, CreateTable)
 
     QString text = "select DISTINCT tbl_name from sqlite_master where tbl_name = '" + DB::Tables::Data::Transaction::tableName() + "';";
 
-    auto [query, result] = transaction->MakeQuery(text);
-            ASSERT_TRUE(result);
+    auto query = transaction->MakeQuery(text);
 
             QString answer = "";
             if (query->next()) {
@@ -596,6 +587,7 @@ TEST(transaction_table_test, Remove) {
 }
 
 TEST(transaction_table_test, Add2) {
+    try {
     QString text = "INSERT INTO "
             + Data::Transaction::tableName() + " ("
             + Data::Transaction::id() + ", "
@@ -613,8 +605,12 @@ TEST(transaction_table_test, Add2) {
             + "','"
             + S_NUM(0) + "','"
             + S_NUM(0) + "');";
-    auto [query,result] = transaction->MakeQuery(text);
-            ASSERT_FALSE(result);
+    transaction->MakeQuery(text);
+    }
+            catch(const ExceptionDB& err) {
+        Q_UNUSED(err);
+    }
+
 }
 
 /// *** close db *** ///

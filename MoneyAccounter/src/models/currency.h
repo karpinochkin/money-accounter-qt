@@ -2,6 +2,7 @@
 #define CURRENCY_H
 
 #include "basemodel.h"
+#include <QSqlQuery>
 
 namespace Models {
 
@@ -12,6 +13,12 @@ public:
 
     bool isCorrect() const override {
         return !(id < 1 || name.isEmpty() || symbol.isEmpty());
+    }
+
+    void operator<<(QSqlQuery *query) {
+        id = query->value(0).toUInt();
+        name = query->value(1).toString();
+        symbol = query->value(2).toString();
     }
 };
 
