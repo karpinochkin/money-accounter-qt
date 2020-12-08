@@ -23,12 +23,13 @@ void QIcon::CreateTable()
 
 void QIcon::Add(const MBase &model)
 {
+    uint uid = getCorrectID(model, DataIcon::tableName(), DataIcon::id());
     QString text = "INSERT INTO "
             + DataIcon::tableName() + " ("
             + DataIcon::id() + ", "
             + DataIcon::path() + " "
             + ") VALUES ('"
-            + S_NUM(model.id) + "','"
+            + S_NUM(uid) + "','"
             + static_cast<const MIcon&>(model).path + "');";
 
     this->MakeQuery(text);

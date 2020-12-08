@@ -40,6 +40,8 @@ void DB::Tables::Transaction::CreateTable()
 
 void DB::Tables::Transaction::Add(const MBase &model)
 {
+    uint uid = getCorrectID(model, DataTransact::tableName(), DataTransact::id());
+    qDebug() << uid;
     QString text = "INSERT INTO "
             + DataTransact::tableName() + " ("
             + DataTransact::id() + ", "
@@ -50,7 +52,7 @@ void DB::Tables::Transaction::Add(const MBase &model)
             + DataTransact::idCashAccount() + ", "
             + DataTransact::idCategory()
             + ") VALUES ('"
-            + S_NUM(model.id) + "','"
+            + S_NUM(uid) + "','"
             + static_cast<const MTransact&>
             (model).name + "','"
             + static_cast<const MTransact&>

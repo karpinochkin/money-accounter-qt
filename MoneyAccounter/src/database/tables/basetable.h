@@ -61,6 +61,7 @@ protected:
     virtual QVariantList GetAll() = 0;
 
     void removeRow(uint id, const QString &tableName, const QString &idColumnName);
+    uint getCorrectID(const MBase& model, const QString &tableName, const QString &idColumnName);
 
     template<typename T> QVariantList getAllRows(QSqlQuery* query) {
         QVariantList list;
