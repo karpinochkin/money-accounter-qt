@@ -1,19 +1,23 @@
 QT       += core gui sql
+QT += quick
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-#TEMPLATE = subdirs
-#SUBDIRS += tests/tests.pro
+TEMPLATE = subdirs
+SUBDIRS += tests/tests.pro
 
 DEFINES += QT_DEPRECATED_WARNINGS
 
 RESOURCES += \
     resources/data_resources.qrc \
-    resources/icon_resources.qrc
+    resources/icon_resources.qrc \
+    src/gui/qml/qml.qrc
 
 SOURCES += \
+    src/core/qappstarter.cpp \
+    src/core/qmiddlewareqml.cpp \
     src/database/controllers/tablecontrollers.cpp \
     src/database/dbdispatcher.cpp \
     src/database/fillers/dbdefaultfillers.cpp \
@@ -28,6 +32,8 @@ SOURCES += \
 
 HEADERS += \
     src/core/base.h \
+    src/core/qappstarter.h \
+    src/core/qmiddlewareqml.h \
     src/database/controllers/tablecontrollers.h \
     src/database/dbdispatcher.h \
     src/database/fillers/dbdefaultfillers.h \
@@ -51,4 +57,8 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES += \
+    src/gui/qml/Delegates/TabsDelegate.qml \
+    src/gui/qml/main.qml
 
