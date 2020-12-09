@@ -41,7 +41,6 @@ void Category::CreateTable()
 
 void Category::Add(const MBase &model)
 {
-    uint uid = getCorrectID(model, DataCategory::tableName(), DataCategory::id());
 //    QString text = "INSERT OR IGNORE INTO "
     QString text = "INSERT INTO "
             + DataCategory::tableName() + " ("
@@ -52,7 +51,7 @@ void Category::Add(const MBase &model)
             + DataCategory::idIcon() + ","
             + DataCategory::color()
             + ") VALUES ('"
-            + S_NUM(uid) + "','"
+            + S_NUM(model.id) + "','"
             + static_cast<const MCategory&>(model).name + "','"
             + static_cast<const MCategory&>(model).description + "','"
             + S_NUM(static_cast<const MCategory&>(model).currency.id) + "','"

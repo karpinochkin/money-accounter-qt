@@ -22,21 +22,6 @@ void QBase::removeRow(uint id, const QString &tableName, const QString &idColumn
     this->MakeQuery(text);
 }
 
-uint QBase::getCorrectID(const MBase &model, const QString &tableName, const QString &idColumnName)
-{
-    if (model.id == 0) {
-        QString text = "SELECT MAX("
-                +idColumnName + ") + 1 FROM "
-                + tableName;
-        auto query = this->MakeQuery(text);
-        if(query->next()) {
-            return query->value(0).toUInt();
-        }
-        return 0;
-    }
-    return model.id;
-}
-
 QBase::QBase::~QBase()
 {
     delete mutex;

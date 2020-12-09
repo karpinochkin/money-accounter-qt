@@ -36,7 +36,6 @@ void CashAccoutType::CreateTable()
 
 void CashAccoutType::Add(const MBase &model)
 {
-    uint uid = getCorrectID(model, DataCashAccType::tableName(), DataCashAccType::id());
     QString text = "INSERT INTO "
             + DataCashAccType::tableName() + " ("
             + DataCashAccType::id() + ", "
@@ -46,7 +45,7 @@ void CashAccoutType::Add(const MBase &model)
             + DataCashAccType::isIncludeRefund() + ", "
             + DataCashAccType::isIncludePurpose()
             + " ) VALUES ('"
-            + S_NUM(uid) + "','"
+            + S_NUM(model.id) + "','"
             + static_cast<const MCashAccType&>(
                 model).name + "','"
             + static_cast<const MCashAccType&>(
@@ -184,7 +183,6 @@ void CashAccount::CreateTable()
 
 void CashAccount::Add(const MBase &model)
 {
-    uint uid = getCorrectID(model, DataCashAcc::tableName(), DataCashAcc::id());
     //    QString text = "INSERT OR IGNORE INTO "
     QString text = "INSERT INTO "
             + DataCashAcc::tableName() + " ("
@@ -202,7 +200,7 @@ void CashAccount::Add(const MBase &model)
             + DataCashAcc::displayInOverallBalance() + ", "
             + DataCashAcc::idCashAccountType()
             + ") VALUES ('"
-            + S_NUM(uid) + "','"
+            + S_NUM(model.id) + "','"
             + static_cast<const MCashAcc&>(
                 model).name + "','"
             + static_cast<const MCashAcc&>(

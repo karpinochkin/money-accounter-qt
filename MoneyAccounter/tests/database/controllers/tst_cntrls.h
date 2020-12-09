@@ -40,17 +40,6 @@ TEST(currency_controller_test, add_currency) {
     currency_.symbol = "EUR";
     ASSERT_TRUE(currency->Add(currency_));
     ASSERT_FALSE(currency->Add(currency_));
-
-    currency_.id = 0;
-    ASSERT_FALSE(currency->Add(currency_));
-    currency_.name = "eur";
-    ASSERT_FALSE(currency->Add(currency_));
-    currency_.symbol = "e";
-    ASSERT_TRUE(currency->Add(currency_));
-    currency_.id = 3;
-    currency_.name = "t";
-    currency_.symbol = "tt";
-    ASSERT_FALSE(currency->Add(currency_));
 }
 
 TEST(currency_controller_test, get_currency) {
@@ -65,7 +54,7 @@ TEST(currency_controller_test, get_currency) {
 TEST(currency_controller_test, get_currencies) {
         auto models = currency->GetAll();
 
-        ASSERT_EQ(3, std::size(models));
+        ASSERT_EQ(2, std::size(models));
         ASSERT_TRUE(models.at(0).isCorrect());
         ASSERT_TRUE(models.at(1).isCorrect());
 
@@ -92,14 +81,6 @@ TEST(icon_controller_test, Add) {
     icon_.id = 88;
     icon_.path = "8888888";
     ASSERT_TRUE(icon->Add(icon_));
-    ASSERT_FALSE(icon->Add(icon_));
-
-    icon_.id = 0;
-    icon_.path = "12";
-    ASSERT_TRUE(icon->Add(icon_));
-    icon_.id = 89;
-    icon_.path = "14";
-    ASSERT_FALSE(icon->Add(icon_));
 }
 
 TEST(icon_controller_test, Get) {
@@ -112,7 +93,7 @@ TEST(icon_controller_test, Get) {
 TEST(icon_controller_test, GetAll) {
     auto models = icon->GetAll();
 
-    ASSERT_EQ(3, std::size(models));
+    ASSERT_EQ(2, std::size(models));
     ASSERT_TRUE(models.at(0).isCorrect());
     ASSERT_TRUE(models.at(1).isCorrect());
 
@@ -147,13 +128,6 @@ TEST(cash_account_category_controller_test, Add) {
     ASSERT_TRUE(cashAccType->Add(model_2));
     ASSERT_FALSE(cashAccType->Add(model_1));
     ASSERT_FALSE(cashAccType->Add(model_2));
-
-    model_2.id = 0;
-    model_2.name = "test";
-    ASSERT_TRUE(cashAccType->Add(model_2));
-    model_2.id = 133;
-    model_2.name = "t";
-    ASSERT_FALSE(cashAccType->Add(model_2));
 }
 
 TEST(cash_account_category_controller_test, Get) {
@@ -182,7 +156,7 @@ TEST(cash_account_category_controller_test, Get) {
 
 TEST(cash_account_category_controller_test, GetAll) {
     auto list = cashAccType->GetAll();
-    ASSERT_EQ(std::size(list), 3);
+    ASSERT_EQ(std::size(list), 2);
 
     ASSERT_TRUE(list[0].isCorrect());
     ASSERT_EQ(list[0].id, 2);
@@ -227,13 +201,6 @@ TEST(cash_account_controller_test, Add) {
     model.currency.id = 2;
     model.type.id = 2;
     ASSERT_TRUE(cashAcc->Add(model));
-    ASSERT_FALSE(cashAcc->Add(model));
-
-    model.id = 0;
-    model.name = "test";
-    ASSERT_TRUE(cashAcc->Add(model));
-    model.id = 3;
-    model.name = "t";
     ASSERT_FALSE(cashAcc->Add(model));
 }
 
@@ -311,7 +278,7 @@ TEST(cash_account_controller_test, Get) {
 
 TEST(cash_account_controller_test, GetAll) {
     auto mdls = cashAcc->GetAll();
-    ASSERT_EQ(std::size(mdls), 3);
+    ASSERT_EQ(std::size(mdls), 2);
     ASSERT_EQ(mdls.at(0).id, 1);
     ASSERT_EQ(mdls.at(0).name, "test111");
     ASSERT_EQ(mdls.at(0).description, "desc");
@@ -343,7 +310,7 @@ TEST(cash_account_controller_test, Remove) {
     bool result = cashAcc->Remove(1);
     ASSERT_TRUE(result);
     auto mdls = cashAcc->GetAll();
-    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(std::size(mdls), 1);
     ASSERT_EQ(mdls.at(0).id, 2);
     ASSERT_EQ(mdls.at(0).name, "test222");
     ASSERT_EQ(mdls.at(0).description, "");
@@ -380,13 +347,6 @@ TEST(category_controller_test, Add) {
     model.icon.id = 2;
     model.currency.id = 2;
     ASSERT_TRUE(category->Add(model));
-    ASSERT_FALSE(category->Add(model));
-
-    model.id = 0;
-    model.name = "test";
-    ASSERT_TRUE(category->Add(model));
-    model.id = 3;
-    model.name = "t";
     ASSERT_FALSE(category->Add(model));
 }
 
@@ -436,7 +396,7 @@ TEST(category_controller_test, Get) {
 
 TEST(category_controller_test, GetAll) {
     auto mdls = category->GetAll();
-    ASSERT_EQ(std::size(mdls), 3);
+    ASSERT_EQ(std::size(mdls), 2);
     ASSERT_EQ(mdls.at(0).id, 1);
     ASSERT_EQ(mdls.at(0).name, "test111");
     ASSERT_EQ(mdls.at(0).description, "desc");
@@ -456,7 +416,7 @@ TEST(category_controller_test, Remove) {
     bool result = category->Remove(1);
     ASSERT_TRUE(result);
     auto mdls = category->GetAll();
-    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(std::size(mdls), 1);
     ASSERT_EQ(mdls.at(0).id, 2);
     ASSERT_EQ(mdls.at(0).name, "test222");
     ASSERT_EQ(mdls.at(0).description, "");
@@ -498,13 +458,6 @@ TEST(transaction_controller_test, Add) {
     ASSERT_FALSE(transaction->Add(model2));
     model2.category.id = 2;
     ASSERT_TRUE(transaction->Add(model2));
-
-    model2.id = 0;
-    model2.name = "test";
-    ASSERT_TRUE(transaction->Add(model2));
-    model2.id = 3;
-    model2.name = "t";
-    ASSERT_FALSE(transaction->Add(model2));
 }
 
 TEST(transaction_controller_test, Edit) {
@@ -549,7 +502,7 @@ TEST(transaction_controller_test, Get) {
 
 TEST(transaction_controller_test, GetAll) {
     auto ms = transaction->GetAll();
-    ASSERT_EQ(std::size(ms), 3);
+    ASSERT_EQ(std::size(ms), 2);
     ASSERT_EQ(ms.at(0).id, 1);
     ASSERT_EQ(ms.at(0).name, "test111");
     ASSERT_EQ(ms.at(0).description, "desc");
@@ -568,7 +521,7 @@ TEST(transaction_controller_test, GetAll) {
 TEST(transaction_controller_test, Remove) {
     ASSERT_TRUE(transaction->Remove(1));
     auto ms = transaction->GetAll();
-    ASSERT_EQ(std::size(ms), 2);
+    ASSERT_EQ(std::size(ms), 1);
 
     ASSERT_EQ(ms.at(0).id, 2);
     ASSERT_EQ(ms.at(0).name, "test222");
@@ -605,33 +558,33 @@ TEST(transaction_controller_test, Remove) {
     ASSERT_TRUE(transaction->Add(tr));
 
     ms = transaction->GetAll();
-    ASSERT_EQ(std::size(ms), 3);
-    ASSERT_EQ(ms.at(2).id, 33);
-    ASSERT_EQ(ms.at(2).name, "testtransactionname33");
-    ASSERT_EQ(ms.at(2).description, "");
-    ASSERT_EQ(ms.at(2).cashAccount.id, 33);
-    ASSERT_EQ(ms.at(2).category.id, 33);
-    ASSERT_EQ(ms.at(2).sum.getAsDouble(), 0.0);
+    ASSERT_EQ(std::size(ms), 2);
+    ASSERT_EQ(ms.at(1).id, 33);
+    ASSERT_EQ(ms.at(1).name, "testtransactionname33");
+    ASSERT_EQ(ms.at(1).description, "");
+    ASSERT_EQ(ms.at(1).cashAccount.id, 33);
+    ASSERT_EQ(ms.at(1).category.id, 33);
+    ASSERT_EQ(ms.at(1).sum.getAsDouble(), 0.0);
 
     ASSERT_TRUE(category->Remove(33));
     ms = transaction->GetAll();
-    ASSERT_EQ(std::size(ms), 3);
-    ASSERT_EQ(ms.at(2).id, 33);
-    ASSERT_EQ(ms.at(2).name, "testtransactionname33");
-    ASSERT_EQ(ms.at(2).description, "");
-    ASSERT_EQ(ms.at(2).cashAccount.id, 33);
-    ASSERT_EQ(ms.at(2).category.id, 1);
-    ASSERT_EQ(ms.at(2).sum.getAsDouble(), 0.0);
+    ASSERT_EQ(std::size(ms), 2);
+    ASSERT_EQ(ms.at(1).id, 33);
+    ASSERT_EQ(ms.at(1).name, "testtransactionname33");
+    ASSERT_EQ(ms.at(1).description, "");
+    ASSERT_EQ(ms.at(1).cashAccount.id, 33);
+    ASSERT_EQ(ms.at(1).category.id, 1);
+    ASSERT_EQ(ms.at(1).sum.getAsDouble(), 0.0);
 
     ASSERT_TRUE(cashAcc->Remove(33));
     ms = transaction->GetAll();
-    ASSERT_EQ(std::size(ms), 3);
-    ASSERT_EQ(ms.at(2).id, 33);
-    ASSERT_EQ(ms.at(2).name, "testtransactionname33");
-    ASSERT_EQ(ms.at(2).description, "");
-    ASSERT_EQ(ms.at(2).cashAccount.id, 1);
-    ASSERT_EQ(ms.at(2).category.id, 1);
-    ASSERT_EQ(ms.at(2).sum.getAsDouble(), 0.0);
+    ASSERT_EQ(std::size(ms), 2);
+    ASSERT_EQ(ms.at(1).id, 33);
+    ASSERT_EQ(ms.at(1).name, "testtransactionname33");
+    ASSERT_EQ(ms.at(1).description, "");
+    ASSERT_EQ(ms.at(1).cashAccount.id, 1);
+    ASSERT_EQ(ms.at(1).category.id, 1);
+    ASSERT_EQ(ms.at(1).sum.getAsDouble(), 0.0);
 
 }
 

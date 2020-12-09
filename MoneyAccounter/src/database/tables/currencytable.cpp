@@ -29,7 +29,6 @@ void QCurrency::CreateTable()
 
 void QCurrency::Add(const MBase &model)
 {
-    uint uid = getCorrectID(model, DataCurrency::tableName(), DataCurrency::id());
     //    QString text = "INSERT OR IGNORE INTO "
     QString text = "INSERT INTO "
             + DataCurrency::tableName() + " ("
@@ -37,7 +36,7 @@ void QCurrency::Add(const MBase &model)
             + DataCurrency::name() + ", "
             + DataCurrency::symbol() + " "
             + ") VALUES ('"
-            + S_NUM(uid) + "','"
+            + S_NUM(model.id) + "','"
             + static_cast<const MCurrency&>(
                 model).name + "','"
             + static_cast<const MCurrency&>(

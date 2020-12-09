@@ -49,11 +49,6 @@ TEST(currency_table_test, add_test) {
     currency_.symbol = "EUR";
     currency->Add(currency_);
 
-    currency_.id = 0;
-    currency_.name = "test";
-    currency_.symbol = "t";
-    currency->Add(currency_);
-
     QString text = "select " + DB::Tables::Data::Currency::name() + ", "
             + DB::Tables::Data::Currency::symbol()
             + " from " + DB::Tables::Data::Currency::tableName()
@@ -64,16 +59,6 @@ TEST(currency_table_test, add_test) {
         ASSERT_EQ(query->value(0).toString(), "Euro");
         ASSERT_EQ(query->value(1).toString(), "EUR");
     }
-    text = "select " + DB::Tables::Data::Currency::name() + ", "
-                + DB::Tables::Data::Currency::symbol()
-                + " from " + DB::Tables::Data::Currency::tableName()
-                + " where " + DB::Tables::Data::Currency::id()
-                + " = '3';";
-        query = currency->MakeQuery(text);
-        if(query->next()) {
-            ASSERT_EQ(query->value(0).toString(), "test");
-            ASSERT_EQ(query->value(1).toString(), "t");
-        }
 }
 
 TEST(currency_table_test, get_test) {
@@ -88,7 +73,7 @@ TEST(currency_table_test, get_test) {
 TEST(currency_table_test, get_all_test) {
     auto models = currency->GetAll();
 
-    ASSERT_EQ(std::size(models), 3);
+    ASSERT_EQ(std::size(models), 2);
 
     ASSERT_TRUE(models.at(0).value<Models::Currency>().isCorrect());
     ASSERT_EQ(models.at(0).value<Models::Currency>().id, 1);
@@ -131,10 +116,6 @@ TEST(icon_table_test, Add) {
     icon_.path = "path123";
     icon->Add(icon_);
 
-    icon_.id = 0;
-    icon_.path = "path1234";
-    icon->Add(icon_);
-
     QString text = "select " + DB::Tables::Data::Icon::path()
             + " from " + DB::Tables::Data::Icon::tableName()
             + " where " + DB::Tables::Data::Icon::id()
@@ -143,16 +124,6 @@ TEST(icon_table_test, Add) {
     auto query = icon->MakeQuery(text);
     if(query->next()) {
         ASSERT_EQ(query->value(0).toString(), "path123");
-    }
-
-    text = "select " + DB::Tables::Data::Icon::path()
-            + " from " + DB::Tables::Data::Icon::tableName()
-            + " where " + DB::Tables::Data::Icon::id()
-            + " = '4';";
-
-    query = icon->MakeQuery(text);
-    if(query->next()) {
-        ASSERT_EQ(query->value(0).toString(), "path1234");
     }
 }
 
@@ -171,7 +142,7 @@ TEST(icon_table_test, Get) {
 TEST(icon_table_test, GetAll) {
     auto models = icon->GetAll();
 
-    ASSERT_EQ(std::size(models), 4);
+    ASSERT_EQ(std::size(models), 3);
     ASSERT_TRUE(models.at(0).value<Models::Icon>().isCorrect());
     ASSERT_EQ(models.at(0).value<Models::Icon>().id, 1);
     ASSERT_EQ(models.at(0).value<Models::Icon>().path, "path1");
@@ -213,14 +184,8 @@ TEST(cash_accs_categ_table_test, Add) {
     model_2.id = 132;
     model_2.name = "test2";
 
-    MCashAccType model_3;
-    model_3.id = 0;
-    model_3.name = "test3";
-
     cashAccsCateg->Add(model_1);
     cashAccsCateg->Add(model_2);
-    cashAccsCateg->Add(model_3);
-
 }
 
 TEST(cash_accs_categ_table_test, Get) {
@@ -249,7 +214,7 @@ TEST(cash_accs_categ_table_test, Get) {
 
 TEST(cash_accs_categ_table_test, GetAll) {
     auto list = cashAccsCateg->GetAll();
-    ASSERT_EQ(std::size(list), 3);
+    ASSERT_EQ(std::size(list), 2);
 
     ASSERT_TRUE(list[0].value<Models::CashAccountType>().isCorrect());
     ASSERT_EQ(list[0].value<Models::CashAccountType>().id, 13);
@@ -297,10 +262,6 @@ TEST(cash_acc_table_test, Add) {
     model.icon.id = 1;
     model.currency.id = 2;
     model.type.id = 2;
-    cashAcc->Add(model);
-
-    model.id = 0;
-    model.name = "name3";
     cashAcc->Add(model);
 }
 
@@ -364,7 +325,7 @@ TEST(cash_acc_table_test, Get) {
 TEST(cash_acc_table_test, GetAll) {
     auto mdls = cashAcc->GetAll();
     auto m1 = unpack<Models::CashAccount>(mdls.at(0));
-    ASSERT_EQ(std::size(mdls), 3);
+    ASSERT_EQ(std::size(mdls), 2);
     ASSERT_EQ(m1.id, 1);
     ASSERT_EQ(m1.name, "test111");
     ASSERT_EQ(m1.description, "desc");
@@ -399,7 +360,7 @@ TEST(cash_acc_table_test, Remove) {
 
     auto mdls = cashAcc->GetAll();
     auto m1 = unpack<Models::CashAccount>(mdls.at(0));
-    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(std::size(mdls), 1);
     ASSERT_EQ(m1.id, 2);
     ASSERT_EQ(m1.name, "test222");
     ASSERT_EQ(m1.description, "");
@@ -444,10 +405,6 @@ TEST(category_table_test, Add) {
     model.currency.id = 2;
     model.description = "desc2";
     category->Add(model);
-
-    model.id = 0;
-    model.name = "test";
-    category->Add(model);
 }
 
 TEST(category_table_test, Edit) {
@@ -489,7 +446,7 @@ TEST(category_table_test, Get) {
 TEST(category_table_test, GetAll) {
     auto mdls = category->GetAll();
     auto m1 = unpack<Models::Category>(mdls.at(0));
-    ASSERT_EQ(std::size(mdls), 3);
+    ASSERT_EQ(std::size(mdls), 2);
     ASSERT_EQ(m1.id, 1);
     ASSERT_EQ(m1.name, "test111");
     ASSERT_EQ(m1.description, "desc");
@@ -512,7 +469,7 @@ TEST(category_table_test, Remove) {
     auto mdls = category->GetAll();
     auto m1 = unpack<Models::Category>(mdls.at(0));
 
-    ASSERT_EQ(std::size(mdls), 2);
+    ASSERT_EQ(std::size(mdls), 1);
     ASSERT_EQ(m1.id, 2);
     ASSERT_EQ(m1.name, "test222");
     ASSERT_EQ(m1.description, "");
@@ -554,10 +511,6 @@ TEST(transaction_table_test, Add) {
     model2.sum = 3;
     model2.cashAccount.id = 2;
     model2.category.id = 1;
-    transaction->Add(model2);
-
-    model2.id = 0;
-    model2.name = "test";
     transaction->Add(model2);
 }
 
@@ -601,7 +554,7 @@ TEST(transaction_table_test, Get) {
 TEST(transaction_table_test, GetAll) {
     auto ms = transaction->GetAll();
     auto m1 = unpack<Models::Transaction>(ms.at(0));
-    ASSERT_EQ(std::size(ms), 3);
+    ASSERT_EQ(std::size(ms), 2);
     ASSERT_EQ(m1.id, 1);
     ASSERT_EQ(m1.name, "test111");
     ASSERT_EQ(m1.description, "desc");
@@ -623,7 +576,7 @@ TEST(transaction_table_test, Remove) {
 
     auto ms = transaction->GetAll();
     auto m1 = unpack<Models::Transaction>(ms.at(0));
-    ASSERT_EQ(std::size(ms), 2);
+    ASSERT_EQ(std::size(ms), 1);
 
     ASSERT_EQ(m1.id, 2);
     ASSERT_EQ(m1.name, "test222");
