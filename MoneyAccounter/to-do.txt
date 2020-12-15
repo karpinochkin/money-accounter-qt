@@ -1,6 +1,2 @@
 /// *** TO DO *** \\\
-fillers tests?
-controllers refactor+(-)
-dispatcher (?&)
-убрать филлеры???
-+ add obj on empty id in db
++ gui
