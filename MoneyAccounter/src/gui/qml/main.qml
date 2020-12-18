@@ -7,6 +7,7 @@ import QtGraphicalEffects 1.0
 import "qrc:/Delegates"
 import "qrc:/Models"
 import "qrc:/Highlighters"
+import "qrc:/Views"
 
 ApplicationWindow {
     id: main
@@ -24,6 +25,9 @@ ApplicationWindow {
         {
             close.accepted = false
         }
+    }
+    Component.onCompleted: {
+        middlewareQML.loadAllCashAccount();
     }
 
     Connections {
@@ -49,6 +53,50 @@ ApplicationWindow {
     Rectangle {
         anchors.fill: parent
         color: backgroundColor
+
+        CashAccountsView {
+            id: cashAccView
+            anchors.fill: parent
+            state: "Hidden"
+            states: [
+                State {
+                    name: "Hidden"
+                    PropertyChanges {
+                        target: cashAccView
+                        visible: false
+                    }
+                },
+                State {
+                    name: "Visible"
+                    PropertyChanges {
+                        target: cashAccView
+                        visible: true
+                    }
+                }
+            ]
+        }
+
+        CategoriesView {
+            id: categoriesView
+            anchors.fill: parent
+            state: "Visible"
+            states: [
+                State {
+                    name: "Hidden"
+                    PropertyChanges {
+                        target: categoriesView
+                        visible: false
+                    }
+                },
+                State {
+                    name: "Visible"
+                    PropertyChanges {
+                        target: categoriesView
+                        visible: true
+                    }
+                }
+            ]
+        }
     }
 
     footer: Rectangle {
@@ -71,19 +119,22 @@ ApplicationWindow {
 
             model: TabModel{}
             delegate: TabsDelegate {}
-//            highlight: TabHighlighter{}
-//            highlightFollowsCurrentItem: true
+            highlight: TabHighlighter{}
+            highlightFollowsCurrentItem: true
             orientation: ListView.Horizontal
             spacing: dp(10)
             interactive: false
             currentIndex: 1
-            onCurrentIndexChanged: console.log(currentIndex)
+            onCurrentIndexChanged: {
+                setTabVisible(currentIndex)
+            }
         }
     }
 
-
     property int dpi: Screen.pixelDensity * 25.4
     property color backgroundColor: "#212d3b"
+    property color textColor: "white"
+    property color textBlueColor: "#6F98C7"
 
     function dp(x){
         if(dpi < 120) {
@@ -106,9 +157,36 @@ ApplicationWindow {
         }
     }
 
-    property int previousIndexOfButtonTabs: 0
     function setCurrentTab(index)
     {
+        tabsView.currentIndex = index
+    }
 
+    function setHidden(st) {
+        if (st.state === "Visible") {
+            st.state = "Hidden"
+        }
+    }
+
+    function setVisible(st) {
+        if (st.state === "Hidden") {
+            st. state = "Visible"
+        }
+    }
+
+    function setTabVisible(activeIndex) {
+        setHidden(cashAccView)
+        setHidden(categoriesView)
+
+        switch(activeIndex) {
+        case 0: setVisible(cashAccView)
+            break
+        case 1: setVisible(categoriesView)
+            break
+        case 2: console.log(currentIndex)
+            break
+        case 3: console.log(currentIndex)
+            break
+        }
     }
 }

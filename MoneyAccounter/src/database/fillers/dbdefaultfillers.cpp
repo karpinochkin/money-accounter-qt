@@ -52,7 +52,7 @@ void QIconFiller::setDefaultValuesIntoTables()
         uint id = 1;
         for (auto i : qrc) {
             icon.id = id;
-            icon.path = i;
+            icon.path = i.remove("../");
             m_icon.Add(icon);
             ++id;
         }
@@ -120,6 +120,7 @@ void QCashAccountFiller::addIntoDB(const QList<KIDRow> &kid)
         cashAcc.currency.id = row.objects.at(4)().toUInt();
         cashAcc.balance.setAsDouble(row.objects.at(5)().toDouble());
         cashAcc.type.id = row.objects.at(6)().toUInt();
+        cashAcc.color.set(row.objects.at(7)());
 
         m_cashAcc.Add(cashAcc);
     }

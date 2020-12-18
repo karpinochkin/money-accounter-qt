@@ -27,7 +27,7 @@ Component {
                 text: name
                 width: tabDelegateRect.width
                 height: tabDelegateRect.height / 3
-                color: "white"
+                color: main.textColor
                 horizontalAlignment: Text.AlignHCenter
             }
 
@@ -39,8 +39,7 @@ Component {
             hoverEnabled: true
 
             onClicked: {
-                console.log(index)
-    //            main.setCurrentTab(index)
+                main.setCurrentTab(index)
             }
         }
     }

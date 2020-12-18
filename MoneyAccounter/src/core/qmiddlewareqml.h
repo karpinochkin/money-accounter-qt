@@ -25,9 +25,11 @@ private:
 public slots:
     bool isAndroid();
     void exitApp();
+    void loadAllCashAccount();
 
 signals:
     void signalErrorResponse();
+    void signalCashAccountLoaded();
 
 };
 

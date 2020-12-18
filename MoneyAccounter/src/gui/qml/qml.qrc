@@ -4,5 +4,10 @@
         <file>Delegates/TabsDelegate.qml</file>
         <file>Models/TabModel.qml</file>
         <file>Highlighters/TabHighlighter.qml</file>
+        <file>Views/CashAccountsView.qml</file>
+        <file>Views/CategoriesView.qml</file>
+        <file>Delegates/CashAccountTypesDelegate.qml</file>
+        <file>Delegates/CashAccountsDelegate.qml</file>
+        <file>Dialogs/CashAccountDialog.qml</file>
     </qresource>
 </RCC>
